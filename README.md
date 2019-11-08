@@ -2,7 +2,10 @@
 My first Android application
 
 ### TODO
+- kiirni, hogy melyik van betoltve
+- hint beallitasa a leiras es koltseg mezokre
+- mentse a fo osszeget is
+- szinkronizalja Google Driveba
+- alertek kiszervezni
 - koltsegleiras mezo ems
-- mentes -> adatok torlese -> megmarad e a mentett?
-- kerdes betoltes elott
-- nev beirasa mentes elott
+- tobbnyelvusites
