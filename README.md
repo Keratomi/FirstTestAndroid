@@ -10,3 +10,4 @@ My first Android application
 - koltsegleiras mezo ems
 - tobbnyelvusites
 - kod refaktor
+- footer kialakitasa
