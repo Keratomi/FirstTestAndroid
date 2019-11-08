@@ -1,6 +1,7 @@
 package com.example.firsttest
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -14,7 +15,7 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var fixKoltsegSorKezelo:FixKoltsegSorKezelo
+    private lateinit var fixKoltsegSorKezelo: FixKoltsegSorKezelo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,31 +33,42 @@ class MainActivity : AppCompatActivity() {
         createMentGombKezelo()
 
         createBetoltGombKezelo()
+
+        val ujUresGomb = findViewById<Button>(R.id.ujUres)
+        ujUresGomb.setOnClickListener {
+
+            betoltesKerdes(mainLayout, createUjKalkulacio)
+        }
     }
 
     private fun createBetoltGombKezelo() {
         val betoltGomb = findViewById<Button>(R.id.betolt)
         betoltGomb.setOnClickListener {
 
-            betoltesKerdes(mainLayout)
+            betoltesKerdes(mainLayout, createSavedCalculationChooser)
         }
     }
 
-    private fun kivalasztottKalkulaciotBetolt(fixKoltsegSorLetrehozo: FixKoltsegSorKezelo, fajlNev: String) {
-        fixKoltsegSorLetrehozo.torolMindenSort()
+    private fun kivalasztottKalkulaciotBetolt(
+        fajlNev: String
+    ) {
+        fixKoltsegSorKezelo.torolMindenSort()
 
         val fromFile = File(applicationContext.filesDir.path + "/" + fajlNev).readLines()
 
-        fromFile.forEach {
+        val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
+        befolyoOsszeg.text = fromFile[0]
+
+        fromFile.subList(1, fromFile.size).forEach {
             val (leiras, koltseg) = it.split(";")
-            fixKoltsegSorLetrehozo.ujSor(leiras, koltseg)
+            fixKoltsegSorKezelo.ujSor(leiras, koltseg)
             betoltveMegjelenitotBeallit(fajlNev.substringBeforeLast(".txt"))
         }
     }
 
     private fun betoltveMegjelenitotBeallit(betoltott: String) {
         val betoltveTextField = findViewById<TextView>(R.id.betoltveTextField)
-        betoltveTextField.text = "(betöltve: ${ betoltott })"
+        betoltveTextField.text = "(betöltve: ${betoltott})"
     }
 
     private fun createMentGombKezelo() {
@@ -67,10 +79,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun mentFajlba(fajlNev: String) {
+        val befolyoOsszeg = findViewById<EditText>(R.id.befolyoOsszeg).text.toString()
+
         val saveableString =
             fixKoltsegSorKezelo.fixKoltsegek.joinToString(separator = "\n") { it.leiras.text.toString() + ";" + it.koltseg.text.toString() }
 
-        File(applicationContext.filesDir.path + "/" + fajlNev + ".txt").writeText(saveableString)
+        File(applicationContext.filesDir.path + "/" + fajlNev + ".txt").writeText(befolyoOsszeg + "\n" + saveableString)
     }
 
     private fun createUjSortHozzaadGombKezelo() {
@@ -106,15 +120,18 @@ class MainActivity : AppCompatActivity() {
         val editText = dialogLayout.findViewById<EditText>(R.id.mentendoFajlNeve)
         builder.setView(dialogLayout)
         builder.setPositiveButton("OK") { _, i ->
-                mentFajlba(editText.text.toString())
-                betoltveMegjelenitotBeallit(editText.text.toString())
-                Toast.makeText(applicationContext, "Sikeresen mentve '${editText.text}' néven", Toast.LENGTH_SHORT).show()
+            mentFajlba(editText.text.toString())
+            betoltveMegjelenitotBeallit(editText.text.toString())
+            Toast.makeText(
+                applicationContext,
+                "Sikeresen mentve '${editText.text}' néven",
+                Toast.LENGTH_SHORT
+            ).show()
         }
         builder.show()
     }
 
-    private fun createSavedCalculationChooser(view: View) {
-
+    val createSavedCalculationChooser = { dialog: DialogInterface, which: Int ->
         val items = File(applicationContext.filesDir.path)
             .listFiles { file -> file.name.endsWith(".txt") }
             .map { it.name.substringBeforeLast(".txt") }
@@ -125,15 +142,25 @@ class MainActivity : AppCompatActivity() {
         {
             setTitle("Mentett kalkulációk")
             setItems(items) { dialog, which ->
-                kivalasztottKalkulaciotBetolt(fixKoltsegSorKezelo, items[which] + ".txt")
+                kivalasztottKalkulaciotBetolt(items[which] + ".txt")
             }
 
-            setPositiveButton("Mégse") { _, i -> Unit}
+            setPositiveButton("Mégse") { _, i -> Unit }
             show()
         }
+
+        Unit
     }
 
-    private fun betoltesKerdes(view: View) {
+    val createUjKalkulacio = { dialog: DialogInterface, which: Int ->
+        fixKoltsegSorKezelo.torolMindenSort()
+        fixKoltsegSorKezelo.ujSor()
+        betoltveMegjelenitotBeallit("új, mentetlen")
+
+        Unit
+    }
+
+    private fun betoltesKerdes(view: View, bigyo: (dialog: DialogInterface, which: Int) -> Unit) {
 
         val builder = AlertDialog.Builder(this)
 
@@ -141,8 +168,11 @@ class MainActivity : AppCompatActivity() {
         {
             setTitle("Figyelem!")
             setMessage("Új betöltése esetén az aktuális adatok elvesznek!")
-            setPositiveButton("OK") { _, i -> createSavedCalculationChooser(mainLayout) }
-            setNegativeButton(android.R.string.no, { _, i -> Unit})
+            setPositiveButton(
+                "OK",
+                DialogInterface.OnClickListener(function = bigyo)
+            )
+            setNegativeButton(android.R.string.no, { _, i -> Unit })
             show()
         }
 
