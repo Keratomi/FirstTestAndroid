@@ -14,16 +14,16 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    private val fixKoltsegek: MutableList<FixKoltseg> = mutableListOf<FixKoltseg>()
     private lateinit var fixKoltsegSorKezelo:FixKoltsegSorKezelo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fixKoltsegSorKezelo = FixKoltsegSorKezelo(fixKoltsegek, resources, this, mainLayout)
+        fixKoltsegSorKezelo = FixKoltsegSorKezelo(resources, this, mainLayout)
 
         fixKoltsegSorKezelo.ujSor()
+        betoltveMegjelenitotBeallit("új, mentetlen")
 
         createUjSortHozzaadGombKezelo()
 
@@ -50,7 +50,13 @@ class MainActivity : AppCompatActivity() {
         fromFile.forEach {
             val (leiras, koltseg) = it.split(";")
             fixKoltsegSorLetrehozo.ujSor(leiras, koltseg)
+            betoltveMegjelenitotBeallit(fajlNev.substringBeforeLast(".txt"))
         }
+    }
+
+    private fun betoltveMegjelenitotBeallit(betoltott: String) {
+        val betoltveTextField = findViewById<TextView>(R.id.betoltveTextField)
+        betoltveTextField.text = "(betöltve: ${ betoltott })"
     }
 
     private fun createMentGombKezelo() {
@@ -62,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun mentFajlba(fajlNev: String) {
         val saveableString =
-            fixKoltsegek.joinToString(separator = "\n") { it.leiras.text.toString() + ";" + it.koltseg.text.toString() }
+            fixKoltsegSorKezelo.fixKoltsegek.joinToString(separator = "\n") { it.leiras.text.toString() + ";" + it.koltseg.text.toString() }
 
         File(applicationContext.filesDir.path + "/" + fajlNev + ".txt").writeText(saveableString)
     }
@@ -77,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     private fun createOsszegGombKezelo() {
         val osszegGomb = findViewById<Button>(R.id.osszegez)
         osszegGomb.setOnClickListener {
-            val fixKoltsegOsszeg = calculate(fixKoltsegek)
+            val fixKoltsegOsszeg = calculate(fixKoltsegSorKezelo.fixKoltsegek)
             val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
             var befolyoOsszegSzamkent = befolyoOsszeg.text.toString().toIntOrNull()
             befolyoOsszegSzamkent = if (befolyoOsszegSzamkent == null) 0 else befolyoOsszegSzamkent
@@ -101,6 +107,7 @@ class MainActivity : AppCompatActivity() {
         builder.setView(dialogLayout)
         builder.setPositiveButton("OK") { _, i ->
                 mentFajlba(editText.text.toString())
+                betoltveMegjelenitotBeallit(editText.text.toString())
                 Toast.makeText(applicationContext, "Sikeresen mentve '${editText.text}' néven", Toast.LENGTH_SHORT).show()
         }
         builder.show()

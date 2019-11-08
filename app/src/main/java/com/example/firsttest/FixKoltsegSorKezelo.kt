@@ -8,89 +8,101 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 
 
-data class FixKoltsegSorKezelo(
-    val fixKoltsegek: MutableList<FixKoltseg>,
+class FixKoltsegSorKezelo(
     val resources: Resources,
     val mainActivity: MainActivity,
     val mainLayout: LinearLayout
-)
+) {
+    val fixKoltsegek: MutableList<FixKoltseg> = mutableListOf<FixKoltseg>()
 
-fun FixKoltsegSorKezelo.ujSor(leiras: String, koltseg: String) {
-    ujSor()
-    fixKoltsegek[fixKoltsegek.lastIndex].leiras.setText(leiras)
-    fixKoltsegek[fixKoltsegek.lastIndex].koltseg.setText(koltseg)
-}
-
-fun FixKoltsegSorKezelo.ujSor() {
-    val kontener = LinearLayout(mainActivity)
-    kontener.tag = "contener_" + fixKoltsegek.size
-    val layoutParams = ConstraintLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        resources.getDimensionPixelSize(R.dimen.kontener_height)
-    )
-    layoutParams.orientation = LinearLayout.HORIZONTAL
-    kontener.setLayoutParams(
-        layoutParams
-    )
-    kontener.x = 0F
-    mainLayout.addView(kontener)
-
-    val ujLeiras = ujEditText(InputType.TYPE_CLASS_TEXT, resources.getDimensionPixelSize(R.dimen.edittext_leiras_width))
-    kontener.addView(ujLeiras)
-
-    val ujKoltseg = ujEditText(InputType.TYPE_CLASS_NUMBER, resources.getDimensionPixelSize(R.dimen.edittext_koltseg_width))
-    kontener.addView(ujKoltseg)
-
-    val ujFixKoltseg = FixKoltseg(ujLeiras, ujKoltseg)
-    if (fixKoltsegek.size > 0) {
-        val deleteGomb = ujDeleteGomb(kontener, ujFixKoltseg)
-        kontener.addView(deleteGomb)
+    fun ujSor(leiras: String, koltseg: String) {
+        ujSor()
+        fixKoltsegek[fixKoltsegek.lastIndex].leiras.setText(leiras)
+        fixKoltsegek[fixKoltsegek.lastIndex].koltseg.setText(koltseg)
     }
 
-    fixKoltsegek.add(ujFixKoltseg)
-}
+    fun ujSor() {
+        val kontener = LinearLayout(mainActivity)
+        kontener.tag = "contener_" + fixKoltsegek.size
+        val layoutParams = ConstraintLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            resources.getDimensionPixelSize(R.dimen.kontener_height)
+        )
+        layoutParams.orientation = LinearLayout.HORIZONTAL
+        kontener.setLayoutParams(
+            layoutParams
+        )
+        kontener.x = 0F
+        mainLayout.addView(kontener)
 
-fun FixKoltsegSorKezelo.torolSort(kontener: LinearLayout, fixKoltseg: FixKoltseg) {
-    mainLayout.removeView(kontener)
-    fixKoltsegek.remove(fixKoltseg)
-}
+        val ujLeiras = ujEditText(
+            InputType.TYPE_CLASS_TEXT,
+            resources.getDimensionPixelSize(R.dimen.edittext_leiras_width)
+        )
+        kontener.addView(ujLeiras)
 
-fun FixKoltsegSorKezelo.torolMindenSort() {
-    fixKoltsegek.forEachIndexed { index, element ->
-        torolSort(mainLayout.findViewWithTag<LinearLayout>("contener_${index}"), element)
+        val ujKoltseg = ujEditText(
+            InputType.TYPE_CLASS_NUMBER,
+            resources.getDimensionPixelSize(R.dimen.edittext_koltseg_width)
+        )
+        kontener.addView(ujKoltseg)
+
+        val ujFixKoltseg = FixKoltseg(ujLeiras, ujKoltseg)
+        if (fixKoltsegek.size > 0) {
+            val deleteGomb = ujDeleteGomb(kontener, ujFixKoltseg)
+            kontener.addView(deleteGomb)
+        }
+
+        fixKoltsegek.add(ujFixKoltseg)
     }
-}
 
-private fun FixKoltsegSorKezelo.ujDeleteGomb(kontener: LinearLayout, fixKoltseg: FixKoltseg): ImageButton {
-    val deleteGomb = ImageButton(mainActivity)
-    deleteGomb.setImageResource(android.R.drawable.ic_delete)
-
-    val layoutParams = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.WRAP_CONTENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-
-    deleteGomb.layoutParams = layoutParams
-
-    deleteGomb.setOnClickListener {
-        torolSort(kontener, fixKoltseg)
+    fun torolSort(kontener: LinearLayout, fixKoltseg: FixKoltseg) {
+        mainLayout.removeView(kontener)
+        fixKoltsegek.remove(fixKoltseg)
     }
 
-    return deleteGomb
-}
+    fun torolMindenSort() {
+        fixKoltsegek.forEachIndexed { index, element ->
+            mainLayout.removeView(mainLayout.findViewWithTag<LinearLayout>("contener_${index}"))
+        }
 
-private fun FixKoltsegSorKezelo.ujEditText(inputType: Int, width: Int):EditText {
-    val ujMezo = EditText(mainActivity)
-    ujMezo.tag = "fi_" + inputType + "_" + fixKoltsegek.size
-    ujMezo.inputType = inputType
-    ujMezo.minWidth = width
+        fixKoltsegek.clear()
+    }
 
-    val layoutParams = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.WRAP_CONTENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
+    private fun ujDeleteGomb(
+        kontener: LinearLayout,
+        fixKoltseg: FixKoltseg
+    ): ImageButton {
+        val deleteGomb = ImageButton(mainActivity)
+        deleteGomb.setImageResource(android.R.drawable.ic_delete)
 
-    ujMezo.layoutParams = layoutParams
+        val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
 
-    return ujMezo
+        deleteGomb.layoutParams = layoutParams
+
+        deleteGomb.setOnClickListener {
+            torolSort(kontener, fixKoltseg)
+        }
+
+        return deleteGomb
+    }
+
+    private fun ujEditText(inputType: Int, width: Int): EditText {
+        val ujMezo = EditText(mainActivity)
+        ujMezo.tag = "fi_" + inputType + "_" + fixKoltsegek.size
+        ujMezo.inputType = inputType
+        ujMezo.minWidth = width
+
+        val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        ujMezo.layoutParams = layoutParams
+
+        return ujMezo
+    }
 }
