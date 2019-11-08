@@ -2,25 +2,28 @@ package com.example.firsttest
 
 import android.content.res.Resources
 import android.text.InputType
-import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import kotlinx.android.synthetic.main.activity_main.*
 
 
-data class FixKoltsegSorLetrehozo(
+data class FixKoltsegSorKezelo(
     val fixKoltsegek: MutableList<FixKoltseg>,
     val resources: Resources,
     val mainActivity: MainActivity,
     val mainLayout: LinearLayout
 )
 
-fun FixKoltsegSorLetrehozo.ujSor() {
-    //val kontener = ConstraintLayout(mainActivity)
+fun FixKoltsegSorKezelo.ujSor(leiras: String, koltseg: String) {
+    ujSor()
+    fixKoltsegek[fixKoltsegek.lastIndex].leiras.setText(leiras)
+    fixKoltsegek[fixKoltsegek.lastIndex].koltseg.setText(koltseg)
+}
+
+fun FixKoltsegSorKezelo.ujSor() {
     val kontener = LinearLayout(mainActivity)
-    kontener.id = fixKoltsegek.size
+    kontener.tag = "contener_" + fixKoltsegek.size
     val layoutParams = ConstraintLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,
         resources.getDimensionPixelSize(R.dimen.kontener_height)
@@ -47,7 +50,18 @@ fun FixKoltsegSorLetrehozo.ujSor() {
     fixKoltsegek.add(ujFixKoltseg)
 }
 
-private fun FixKoltsegSorLetrehozo.ujDeleteGomb(kontener: LinearLayout, fixKoltseg: FixKoltseg): ImageButton {
+fun FixKoltsegSorKezelo.torolSort(kontener: LinearLayout, fixKoltseg: FixKoltseg) {
+    mainLayout.removeView(kontener)
+    fixKoltsegek.remove(fixKoltseg)
+}
+
+fun FixKoltsegSorKezelo.torolMindenSort() {
+    fixKoltsegek.forEachIndexed { index, element ->
+        torolSort(mainLayout.findViewWithTag<LinearLayout>("contener_${index}"), element)
+    }
+}
+
+private fun FixKoltsegSorKezelo.ujDeleteGomb(kontener: LinearLayout, fixKoltseg: FixKoltseg): ImageButton {
     val deleteGomb = ImageButton(mainActivity)
     deleteGomb.setImageResource(android.R.drawable.ic_delete)
 
@@ -59,15 +73,15 @@ private fun FixKoltsegSorLetrehozo.ujDeleteGomb(kontener: LinearLayout, fixKolts
     deleteGomb.layoutParams = layoutParams
 
     deleteGomb.setOnClickListener {
-        mainLayout.removeView(kontener)
-        fixKoltsegek.remove(fixKoltseg)
+        torolSort(kontener, fixKoltseg)
     }
 
     return deleteGomb
 }
 
-private fun FixKoltsegSorLetrehozo.ujEditText(inputType: Int, width: Int):EditText {
+private fun FixKoltsegSorKezelo.ujEditText(inputType: Int, width: Int):EditText {
     val ujMezo = EditText(mainActivity)
+    ujMezo.tag = "fi_" + inputType + "_" + fixKoltsegek.size
     ujMezo.inputType = inputType
     ujMezo.minWidth = width
 

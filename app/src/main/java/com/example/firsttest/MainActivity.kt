@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,15 +17,44 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val fixKoltsegSorLetrehozo =
-            FixKoltsegSorLetrehozo(fixKoltsegek, resources, this, mainLayout)
+            FixKoltsegSorKezelo(fixKoltsegek, resources, this, mainLayout)
 
         fixKoltsegSorLetrehozo.ujSor()
 
-        val hozzaadGomb = findViewById<FloatingActionButton>(R.id.floatingActionButton)
-        hozzaadGomb.setOnClickListener {
-            fixKoltsegSorLetrehozo.ujSor()
+        createUjSortHozzaadGombKezelo(fixKoltsegSorLetrehozo)
+
+        createOsszegGombKezelo()
+
+        val mentGomb = findViewById<Button>(R.id.ment)
+        mentGomb.setOnClickListener {
+
+            val saveableString = fixKoltsegek.joinToString(separator = "\n") { it.leiras.text.toString() + ";" + it.koltseg.text.toString() }
+
+            File(applicationContext.filesDir.path + "elsoCsakTeszt.txt").writeText(saveableString)
         }
 
+        val betoltGomb = findViewById<Button>(R.id.betolt)
+        betoltGomb.setOnClickListener {
+
+            fixKoltsegSorLetrehozo.torolMindenSort()
+
+            val fromFile = File(applicationContext.filesDir.path + "elsoCsakTeszt.txt").readLines()
+
+            fromFile.forEach {
+                val (leiras, koltseg) = it.split(";")
+                fixKoltsegSorLetrehozo.ujSor(leiras, koltseg)
+            }
+        }
+    }
+
+    private fun createUjSortHozzaadGombKezelo(fixKoltsegSorKezelo: FixKoltsegSorKezelo) {
+        val hozzaadGomb = findViewById<FloatingActionButton>(R.id.floatingActionButton)
+        hozzaadGomb.setOnClickListener {
+            fixKoltsegSorKezelo.ujSor()
+        }
+    }
+
+    private fun createOsszegGombKezelo() {
         val osszegGomb = findViewById<Button>(R.id.osszegez)
         osszegGomb.setOnClickListener {
             val fixKoltsegOsszeg = calculate(fixKoltsegek)
@@ -38,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun calculate(fixKoltsegek: MutableList<FixKoltseg>): Int = fixKoltsegek.toList()
+    private fun calculate(fixKoltsegek: MutableList<FixKoltseg>): Int = fixKoltsegek.toList()
         .filter { it.koltseg.text.toString().toIntOrNull() != null }
         .sumBy { it.koltseg.text.toString().toInt() }
 }
