@@ -103,6 +103,12 @@ class FixKoltsegSorKezelo(
 
         ujMezo.layoutParams = layoutParams
 
+        if (inputType == 1) {
+            ujMezo.hint = "Leírás"
+        } else {
+            ujMezo.hint = "Költség"
+        }
+
         return ujMezo
     }
 }

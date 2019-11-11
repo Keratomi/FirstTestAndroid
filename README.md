@@ -2,12 +2,12 @@
 My first Android application
 
 ### TODO
-- ujramentes
-- mentes maskent
-- hint beallitasa a leiras es koltseg mezokre
+- footer kialakitasa
 - szinkronizalja Google Driveba
 - alertek kiszervezni
 - koltsegleiras mezo ems
 - tobbnyelvusites
 - kod refaktor
-- footer kialakitasa
+- mentett torlese
+- ujramentes
+- mentes maskent
