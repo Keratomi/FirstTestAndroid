@@ -10,3 +10,6 @@ My first Android application
 - mentett torlese
 - ujramentes
 - mentes maskent
+- letezo fajlok nevsorrendbe
+- mi van, ha nincs meg szinkronizalt fajl?
+- osszevonni az egynevueket, hasznalni a lokalisat, ha van
