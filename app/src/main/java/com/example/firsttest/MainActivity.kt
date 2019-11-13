@@ -23,9 +23,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fixKoltsegSorKezelo = FixKoltsegSorKezelo(resources, this, mainLayout)
         googleDrivebaSzinkronizalo = GoogleDrivebaSzinkronizalo(this)
+        googleDrivebaSzinkronizalo.googleAuth()
 
+        fixKoltsegSorKezelo = FixKoltsegSorKezelo(resources, this, mainLayout)
         fixKoltsegSorKezelo.ujSor()
         betoltveMegjelenitotBeallit("új, mentetlen")
 
@@ -56,18 +57,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun kivalasztottKalkulaciotBetolt(fajlNev: String) {
+    fun kivalasztottKalkulaciotBetolt(calculationName: String, fileContent: List<String>) {
         fixKoltsegSorKezelo.torolMindenSort()
 
-        val fromFile = File(applicationContext.filesDir.path + "/" + fajlNev).readLines()
-
         val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
-        befolyoOsszeg.text = fromFile[0]
+        befolyoOsszeg.text = fileContent[0]
 
-        fromFile.subList(1, fromFile.size).forEach {
+        fileContent.subList(1, fileContent.size).forEach {
             val (leiras, koltseg) = it.split(";")
             fixKoltsegSorKezelo.ujSor(leiras, koltseg)
-            betoltveMegjelenitotBeallit(fajlNev.substringBeforeLast(".txt"))
+            betoltveMegjelenitotBeallit(calculationName)
         }
     }
 
@@ -87,11 +86,11 @@ class MainActivity : AppCompatActivity() {
         val befolyoOsszeg = findViewById<EditText>(R.id.befolyoOsszeg).text.toString()
 
         val saveableString =
-            fixKoltsegSorKezelo.fixKoltsegek.joinToString(separator = "\n") { it.leiras.text.toString() + ";" + it.koltseg.text.toString() }
+            fixKoltsegSorKezelo.fixKoltsegek.joinToString(separator = System.lineSeparator()) { it.leiras.text.toString() + ";" + it.koltseg.text.toString() }
 
         val mentettFile = File(applicationContext.filesDir.path + "/" + fajlNev + ".txt")
-        mentettFile.writeText(befolyoOsszeg + "\n" + saveableString)
-        googleDrivebaSzinkronizalo.szinkronizal(mentettFile)
+        mentettFile.writeText(befolyoOsszeg + System.lineSeparator() + saveableString)
+        googleDrivebaSzinkronizalo.uploadFileToGoogleDrive(mentettFile)
     }
 
     private fun createUjSortHozzaadGombKezelo() {
@@ -138,24 +137,13 @@ class MainActivity : AppCompatActivity() {
         builder.show()
     }
 
-    val createSavedCalculationChooser = { dialog: DialogInterface, which: Int ->
-        val items = File(applicationContext.filesDir.path)
-            .listFiles { file -> file.name.endsWith(".txt") }
-            .map { it.name.substringBeforeLast(".txt") }
-            .toTypedArray()
-
-        createMentettKalkulacioLista(items)
-
-        Unit
-    }
-
     fun createMentettKalkulacioLista(items: Array<String>) {
         val builder = AlertDialog.Builder(this)
         with(builder)
         {
             setTitle("Mentett kalkulációk")
             setItems(items) { dialog, which ->
-                kivalasztottKalkulaciotBetolt(items[which] + ".txt")
+                googleDrivebaSzinkronizalo.readFileFromGoogleDrive(items[which] + ".txt")
             }
 
             setPositiveButton("Mégse") { _, i -> Unit }

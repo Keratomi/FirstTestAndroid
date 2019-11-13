@@ -14,7 +14,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -48,12 +50,26 @@ public class DriveServiceHelper {
         });
     }
 
+    public Task<String> updateFile(String id, java.io.File fileTest) {
+        return Tasks.call(mExecutor, () -> {
+            File metadata = new File();
+
+            InputStream targetStream = new FileInputStream(fileTest);
+            InputStreamContent inputStreamContent = new InputStreamContent("text/plain", targetStream);
+            File googleFile = mDriveService.files().update(id, metadata, inputStreamContent).execute();
+            if (googleFile == null) {
+                throw new IOException("Null result when requesting file creation.");
+            }
+            return googleFile.getId();
+        });
+    }
+
 
     /**
      * Opens the file identified by {@code fileId} and returns a {@link Pair} of its name and
      * contents.
      */
-    public Task<Pair<String, String>> readFile(String fileId) {
+    public Task<Pair<String, List<String>>> readFile(String fileId) {
         return Tasks.call(mExecutor, () -> {
             // Retrieve the metadata as a File object.
             File metadata = mDriveService.files().get(fileId).execute();
@@ -62,15 +78,14 @@ public class DriveServiceHelper {
             // Stream the file contents to a String.
             try (InputStream is = mDriveService.files().get(fileId).executeMediaAsInputStream();
                  BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-                StringBuilder stringBuilder = new StringBuilder();
+                List<String> lines = new ArrayList<>();
                 String line;
 
                 while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
+                    lines.add(line);
                 }
-                String contents = stringBuilder.toString();
 
-                return Pair.create(name, contents);
+                return Pair.create(name, lines);
             }
         });
     }
