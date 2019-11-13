@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         fileContent.subList(1, fileContent.size).forEach {
             val (leiras, koltseg) = it.split(";")
             fixKoltsegSorKezelo.ujSor(leiras, koltseg)
-            betoltveMegjelenitotBeallit(calculationName)
+            betoltveMegjelenitotBeallit(calculationName.substringBeforeLast(".txt"))
         }
     }
 
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         val mentettFile = File(applicationContext.filesDir.path + "/" + fajlNev + ".txt")
         mentettFile.writeText(befolyoOsszeg + System.lineSeparator() + saveableString)
-        googleDrivebaSzinkronizalo.uploadFileToGoogleDrive(mentettFile)
+        googleDrivebaSzinkronizalo.uploadOrUpdateFile(mentettFile)
     }
 
     private fun createUjSortHozzaadGombKezelo() {
@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_edittext, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.mentendoFajlNeve)
         builder.setView(dialogLayout)
-        builder.setPositiveButton("OK") { _, i ->
+        builder.setPositiveButton("OK") { _, _ ->
             mentFajlba(editText.text.toString())
             betoltveMegjelenitotBeallit(editText.text.toString())
             Toast.makeText(
@@ -142,20 +142,20 @@ class MainActivity : AppCompatActivity() {
         with(builder)
         {
             setTitle("Mentett kalkulációk")
-            setItems(items) { dialog, which ->
+            setItems(items) { _, which ->
                 googleDrivebaSzinkronizalo.readFileFromGoogleDrive(items[which] + ".txt")
             }
 
-            setPositiveButton("Mégse") { _, i -> Unit }
+            setPositiveButton("Mégse") { _, _ -> Unit }
             show()
         }
     }
 
-    val filesFromGoogleDrive = { dialog: DialogInterface, which: Int ->
+    val filesFromGoogleDrive = { _: DialogInterface, _: Int ->
         googleDrivebaSzinkronizalo.fajlListatLeker()
     }
 
-    val createUjKalkulacio = { dialog: DialogInterface, which: Int ->
+    val createUjKalkulacio = { _: DialogInterface, _: Int ->
         fixKoltsegSorKezelo.torolMindenSort()
         fixKoltsegSorKezelo.ujSor()
         betoltveMegjelenitotBeallit("új, mentetlen")
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                 "OK",
                 DialogInterface.OnClickListener(function = okFunction)
             )
-            setNegativeButton(android.R.string.no, { _, i -> Unit })
+            setNegativeButton(android.R.string.no) { _, _ -> Unit }
             show()
         }
     }

@@ -9,6 +9,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.Scope
+import com.google.android.gms.tasks.Task
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.gson.GsonFactory
@@ -71,29 +72,23 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
         }
     }
 
-    fun uploadFileToGoogleDrive(fajl: File) {
+    fun uploadOrUpdateFile(file: File) {
         if (mDriveServiceHelper == null) {
             googleDriveIsNotWorking()
             return
         }
-        val uploadTask = mDriveServiceHelper?.uploadFile(fajl.name, fajl)
-        uploadTask?.addOnCompleteListener {
-            Toast.makeText(mainActivity, "Backup upload successfully", Toast.LENGTH_LONG).show()
-            fajl.delete()
-        }
-    }
+        val fileId = filelistFromGoogleDrive.find { it.name == file.name }?.id
 
-    fun updateFileOnGoogleDrive(fajl: File) {
-        if (mDriveServiceHelper == null) {
-            googleDriveIsNotWorking()
-            return
+        val task: Task<String>?
+        if (fileId == null) {
+            task = mDriveServiceHelper?.uploadFile(file.name, file)
+        } else {
+            task = mDriveServiceHelper?.updateFile(fileId, file)
         }
-        val fileId = filelistFromGoogleDrive.find { it.name == fajl.name }?.id
 
-        val updateTask = mDriveServiceHelper?.updateFile(fileId, fajl)
-        updateTask?.addOnCompleteListener {
-            Toast.makeText(mainActivity, "Backup update successfully", Toast.LENGTH_LONG).show()
-            fajl.delete()
+        task?.addOnCompleteListener {
+            Toast.makeText(mainActivity, "A fájl sikeresen mentve a Google Drive-ba", Toast.LENGTH_LONG).show()
+            file.delete()
         }
     }
 
@@ -135,12 +130,9 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
             return false
         }
 
-        val (existsOnGoogleDrive, existsJustOnDevice) = filesOnDevice.partition {
-            filelistFromGoogleDrive.map { it.name }.contains(it.name)
+        filesOnDevice.forEach {
+            uploadOrUpdateFile(it)
         }
-
-        existsJustOnDevice.forEach { uploadFileToGoogleDrive(it) }
-        existsOnGoogleDrive.forEach { updateFileOnGoogleDrive(it) }
 
         return true
     }
