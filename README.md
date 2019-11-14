@@ -1,10 +1,10 @@
 # Money Saving Calculator
-My first Android application
+Simple calculator which helps you to decide how many money can you saving.
 
 ### TODO
-- koltsegleiras mezo ems
 - tobbnyelvusites
 - alertek kiszervezni
 - kod refaktor
 - mentett torlese
-- package atnevezni
+- build megjavitasa
+- dinamikus szelesseg

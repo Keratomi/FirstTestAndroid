@@ -1,4 +1,4 @@
-package com.example.firsttest
+package hu.keratomi.moneysavingcalculator
 
 import org.junit.Test
 

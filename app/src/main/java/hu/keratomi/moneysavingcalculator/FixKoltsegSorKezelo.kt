@@ -1,4 +1,4 @@
-package com.example.firsttest
+package hu.keratomi.moneysavingcalculator
 
 import android.content.res.Resources
 import android.text.InputType

@@ -1,4 +1,4 @@
-package com.example.firsttest
+package hu.keratomi.moneysavingcalculator
 
 import android.app.AlertDialog
 import android.content.DialogInterface
