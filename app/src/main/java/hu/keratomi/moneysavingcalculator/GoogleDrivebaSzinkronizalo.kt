@@ -44,11 +44,13 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
                 ).setApplicationName(mainActivity.getString(R.string.app_name)).build()
 
                 mDriveServiceHelper = DriveServiceHelper(googleDriveService)
+
+                fajlListatLeker(false)
             }
         }
     }
 
-    fun fajlListatLeker() {
+    fun fajlListatLeker(withCalculationChooser: Boolean = true) {
         if (mDriveServiceHelper == null) {
             googleDriveIsNotWorking()
             return
@@ -60,14 +62,16 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
             val wasSync = ifThereAreFilesLocallySyncToGoogleDriveAndDeleteLocally()
 
             if (wasSync) {
-                fajlListatLeker()
+                fajlListatLeker(withCalculationChooser)
             }
 
-            val items = filelistFromGoogleDrive
-                .map { it.name.substringBeforeLast(".txt") }
-                .toTypedArray()
+            if (withCalculationChooser) {
+                val items = filelistFromGoogleDrive
+                    .map { it.name.substringBeforeLast(".txt") }
+                    .toTypedArray()
 
-            mainActivity.createMentettKalkulacioLista(items)
+                mainActivity.createMentettKalkulacioLista(items)
+            }
 
         }
     }

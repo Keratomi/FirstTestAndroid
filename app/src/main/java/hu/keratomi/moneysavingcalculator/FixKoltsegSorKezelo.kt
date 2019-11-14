@@ -48,10 +48,10 @@ class FixKoltsegSorKezelo(
         kontener.addView(ujKoltseg)
 
         val ujFixKoltseg = FixKoltseg(ujLeiras, ujKoltseg)
-        if (fixKoltsegek.size > 0) {
-            val deleteGomb = ujDeleteGomb(kontener, ujFixKoltseg)
-            kontener.addView(deleteGomb)
-        }
+
+        val deleteGomb = ujDeleteGomb(kontener, ujFixKoltseg)
+        kontener.addView(deleteGomb)
+
 
         fixKoltsegek.add(ujFixKoltseg)
     }
