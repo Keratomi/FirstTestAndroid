@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="web_client_id">764258020892-son5lehjvcijurlh5ip9d0d245emf2jo.apps.googleusercontent.com</string>
+
+    <string name="app_name">Pénzmegtakarítás kalkulátor</string>
+    <string name="maradt">Maradt</string>
+    <string name="fix_koltsegek">Fix költségek</string>
+    <string name="osszeg">Összeg</string>
+    <string name="szamol">Számol</string>
+    <string name="ment">Ment</string>
+    <string name="betolt">Betölt</string>
+    <string name="uj">Új</string>
+    <string name="betoltve">(Betöltve: <xliff:g>%s</xliff:g>)</string>
+    <string name="milyen_neven_mentsem">Milyen néven mentsem?</string>
+    <string name="sikeresen_mentve">Sikeresen mentve \'<xliff:g>%s</xliff:g>\' néven</string>
+    <string name="mentett_kalkulaciok">Mentett kalkulációk</string>
+    <string name="uj_mentetlen">új, mentetlen</string>
+    <string name="loose_current">Új betöltése esetén az aktuális adatok elvesznek!</string>
+    <string name="calculation_saved">A kalkuláció sikeresen mentve a Google Drive-ba</string>
+    <string name="gd_is_not_available">A Google Drive jelenleg nem elérhető</string>
+    <string name="description">Leírás</string>
+    <string name="cost">Költség</string>
+</resources>

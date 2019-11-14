@@ -104,11 +104,13 @@ class FixKoltsegSorKezelo(
         ujMezo.layoutParams = layoutParams
 
         if (inputType == 1) {
-            ujMezo.hint = "Leírás"
+            ujMezo.hint = mainActivity.getString(R.string.description)
         } else {
-            ujMezo.hint = "Költség"
+            ujMezo.hint = mainActivity.getString(R.string.cost)
         }
 
         return ujMezo
     }
 }
+
+data class FixKoltseg(val leiras: EditText, val koltseg: EditText)

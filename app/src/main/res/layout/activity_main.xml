@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
-    tools:context="hu.keratomi.moneysavingcalculator.MainActivity"><!--android:id="@+id/mainLayout"-->
+    tools:context="hu.keratomi.moneysavingcalculator.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="40dp"
-            android:text="Maradt"
+            android:text="@string/maradt"
             android:textSize="18sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/osszegText" />
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Fix költségek"
+            android:text="@string/fix_koltsegek"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent" />
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:text="Összeg"
+            android:text="@string/osszeg"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/befolyoOsszeg"
             app:layout_constraintLeft_toLeftOf="parent" />
@@ -90,7 +90,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:text="Számol"
+            android:text="@string/szamol"
             app:layout_constraintBottom_toBottomOf="@+id/befolyoOsszeg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -110,7 +110,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginBottom="8dp"
-            android:text="Ment"
+            android:text="@string/ment"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -121,7 +121,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginBottom="8dp"
-            android:text="Betölt"
+            android:text="@string/betolt"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ment" />
 
@@ -132,7 +132,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginBottom="8dp"
-            android:text="Új"
+            android:text="@string/uj"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/betolt" />
 

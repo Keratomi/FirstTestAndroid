@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         fixKoltsegSorKezelo = FixKoltsegSorKezelo(resources, this, mainLayout)
         fixKoltsegSorKezelo.ujSor()
-        betoltveMegjelenitotBeallit("új, mentetlen")
+        betoltveMegjelenitotBeallit(getString(R.string.uj_mentetlen))
 
         createUjSortHozzaadGombKezelo()
 
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun betoltveMegjelenitotBeallit(betoltott: String) {
         val betoltveTextField = findViewById<TextView>(R.id.betoltveTextField)
-        betoltveTextField.text = "(betöltve: ${betoltott})"
+        betoltveTextField.text = getString(R.string.betoltve, betoltott)
     }
 
     private fun createMentGombKezelo() {
@@ -121,16 +121,16 @@ class MainActivity : AppCompatActivity() {
     private fun createFajlNevBekero(view: View) {
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
-        builder.setTitle("Milyen néven mentsem?")
+        builder.setTitle(getString(R.string.milyen_neven_mentsem))
         val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_edittext, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.mentendoFajlNeve)
         builder.setView(dialogLayout)
-        builder.setPositiveButton("OK") { _, _ ->
+        builder.setPositiveButton(android.R.string.ok) { _, _ ->
             mentFajlba(editText.text.toString())
             betoltveMegjelenitotBeallit(editText.text.toString())
             Toast.makeText(
                 applicationContext,
-                "Sikeresen mentve '${editText.text}' néven",
+                getString(R.string.sikeresen_mentve, editText.text),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -141,12 +141,12 @@ class MainActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         with(builder)
         {
-            setTitle("Mentett kalkulációk")
+            setTitle(R.string.mentett_kalkulaciok)
             setItems(items) { _, which ->
                 googleDrivebaSzinkronizalo.readFileFromGoogleDrive(items[which] + ".txt")
             }
 
-            setPositiveButton("Mégse") { _, _ -> Unit }
+            setPositiveButton(android.R.string.cancel) { _, _ -> Unit }
             show()
         }
     }
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
     val createUjKalkulacio = { _: DialogInterface, _: Int ->
         fixKoltsegSorKezelo.torolMindenSort()
         fixKoltsegSorKezelo.ujSor()
-        betoltveMegjelenitotBeallit("új, mentetlen")
+        betoltveMegjelenitotBeallit(getString(R.string.uj_mentetlen))
 
         Unit
     }
@@ -169,10 +169,10 @@ class MainActivity : AppCompatActivity() {
 
         with(builder)
         {
-            setTitle("Figyelem!")
-            setMessage("Új betöltése esetén az aktuális adatok elvesznek!")
+            setTitle(android.R.string.dialog_alert_title)
+            setMessage(R.string.loose_current)
             setPositiveButton(
-                "OK",
+                android.R.string.ok,
                 DialogInterface.OnClickListener(function = okFunction)
             )
             setNegativeButton(android.R.string.no) { _, _ -> Unit }

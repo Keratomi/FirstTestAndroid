@@ -1,5 +1,22 @@
-<resources>
-    <string name="app_name">Money Saving Calculator</string>
-
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="web_client_id">764258020892-son5lehjvcijurlh5ip9d0d245emf2jo.apps.googleusercontent.com</string>
+
+    <string name="app_name">Money Saving Calculator</string>
+    <string name="maradt">Saving</string>
+    <string name="fix_koltsegek">Fix costs</string>
+    <string name="osszeg">Sum cost</string>
+    <string name="szamol">Calc</string>
+    <string name="ment">Save</string>
+    <string name="betolt">Load</string>
+    <string name="uj">New</string>
+    <string name="betoltve">(Loaded: <xliff:g>%s</xliff:g>)</string>
+    <string name="milyen_neven_mentsem">What will be the saved name?</string>
+    <string name="sikeresen_mentve">Successfully saved with name: \'<xliff:g>%s</xliff:g>\'</string>
+    <string name="mentett_kalkulaciok">Saved calculations</string>
+    <string name="uj_mentetlen">new, unsaved</string>
+    <string name="loose_current">If you try to load new calculation, the current data will be loose</string>
+    <string name="calculation_saved">The calculation has been successfully saved in Google Drive</string>
+    <string name="gd_is_not_available">Google Drive is not available now</string>
+    <string name="description">Description</string>
+    <string name="cost">Cost</string>
 </resources>

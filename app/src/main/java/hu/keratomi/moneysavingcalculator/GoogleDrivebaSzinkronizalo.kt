@@ -87,7 +87,7 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
         }
 
         task?.addOnCompleteListener {
-            Toast.makeText(mainActivity, "A fájl sikeresen mentve a Google Drive-ba", Toast.LENGTH_LONG).show()
+            Toast.makeText(mainActivity, R.string.calculation_saved, Toast.LENGTH_LONG).show()
             file.delete()
         }
     }
@@ -140,7 +140,7 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
     private fun googleDriveIsNotWorking() {
         Toast.makeText(
             mainActivity,
-            "A Google Drive jelenleg nem elérhető",
+            R.string.gd_is_not_available,
             Toast.LENGTH_LONG
         ).show()
     }
