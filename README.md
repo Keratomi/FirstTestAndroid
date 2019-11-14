@@ -9,3 +9,6 @@ Simple calculator which helps you to decide how many money can you saving.
 - build megjavitasa
 - dinamikus szelesseg
 - szinkronizalaskor hiba ag is legyen
+- cost,sum torolni loadkor
+- automatikus sum
+- TODOk

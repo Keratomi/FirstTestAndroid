@@ -5,184 +5,123 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.alert_dialog_with_edittext.*
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var fixKoltsegSorKezelo: FixKoltsegSorKezelo
-    private lateinit var googleDrivebaSzinkronizalo: GoogleDrivebaSzinkronizalo
+    private lateinit var descriptionAndCostRow: DescriptionAndCostRow
+    private lateinit var googleDriveSyncHandler: GoogleDriveSyncHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        googleDrivebaSzinkronizalo = GoogleDrivebaSzinkronizalo(this)
-        googleDrivebaSzinkronizalo.googleAuth()
+        googleDriveSyncHandler = GoogleDriveSyncHandler(this)
+        googleDriveSyncHandler.googleAuth()
 
-        fixKoltsegSorKezelo = FixKoltsegSorKezelo(resources, this, mainLayout)
-        fixKoltsegSorKezelo.ujSor()
-        betoltveMegjelenitotBeallit(getString(R.string.uj_mentetlen))
+        descriptionAndCostRow = DescriptionAndCostRow(resources, this, mainLayout)
+        descriptionAndCostRow.newCostRow()
 
-        createUjSortHozzaadGombKezelo()
-
-        createOsszegGombKezelo()
-
-        createMentGombKezelo()
-
-        createBetoltGombKezelo()
-
-        createUjUresGombKezelo()
+        setLoadedCalculationDisplay(getString(R.string.uj_mentetlen))
     }
 
-    private fun createUjUresGombKezelo() {
-        val ujUresGomb = findViewById<Button>(R.id.ujUres)
-        ujUresGomb.setOnClickListener {
-
-            betoltesKerdes(mainLayout, createUjKalkulacio)
-        }
-    }
-
-    private fun createBetoltGombKezelo() {
-        val betoltGomb = findViewById<Button>(R.id.betolt)
-        betoltGomb.setOnClickListener {
-
-            betoltesKerdes(mainLayout, filesFromGoogleDrive)
-        }
+    fun addNewCostRow(view: View) {
+        descriptionAndCostRow.newCostRow()
     }
 
     fun kivalasztottKalkulaciotBetolt(calculationName: String, fileContent: List<String>) {
-        fixKoltsegSorKezelo.torolMindenSort()
+        descriptionAndCostRow.deleteAllRows()
 
         val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
         befolyoOsszeg.text = fileContent[0]
 
         fileContent.subList(1, fileContent.size).forEach {
-            val (leiras, koltseg) = it.split(";")
-            fixKoltsegSorKezelo.ujSor(leiras, koltseg)
-            betoltveMegjelenitotBeallit(calculationName.substringBeforeLast(".txt"))
+            val (leiras, koltseg) = it.split(CALCULATION_DATA_INLINE_SEPARATOR)
+            descriptionAndCostRow.newCostRow(leiras, koltseg)
+            setLoadedCalculationDisplay(
+                calculationName.substringBeforeLast(
+                    CALCULATION_DATA_FILE_EXTENSION
+                )
+            )
         }
     }
 
-    private fun betoltveMegjelenitotBeallit(betoltott: String) {
+    fun createCalculation(view: View) {
+        val fixKoltsegOsszeg = calculate(descriptionAndCostRow.fixCosts)
+        val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
+        var befolyoOsszegSzamkent = befolyoOsszeg.text.toString().toIntOrNull()
+        befolyoOsszegSzamkent = if (befolyoOsszegSzamkent == null) 0 else befolyoOsszegSzamkent
+
+        val maradtText = findViewById<TextView>(R.id.megmaradtOsszg)
+        val megtakaritas = befolyoOsszegSzamkent - fixKoltsegOsszeg
+        maradtText.text = megtakaritas.toString()
+    }
+
+    fun getCalculationName(view: View) {
+        createWindowForGetCalculationName(this, layoutInflater, saveCalculationAsAFile)
+    }
+
+    fun requestNewEmptyCalculation(view: View) {
+        questionBeforeLoadCalculation(this, createNewEmptyCalculation)
+    }
+
+    fun startCalculationLoadingProcess(view: View) {
+        questionBeforeLoadCalculation(this, filesFromGoogleDrive)
+    }
+
+    private fun setLoadedCalculationDisplay(betoltott: String) {
         val betoltveTextField = findViewById<TextView>(R.id.betoltveTextField)
         betoltveTextField.text = getString(R.string.betoltve, betoltott)
-    }
-
-    private fun createMentGombKezelo() {
-        val mentGomb = findViewById<Button>(R.id.ment)
-        mentGomb.setOnClickListener {
-            createFajlNevBekero(mainLayout)
-        }
     }
 
     private fun mentFajlba(fajlNev: String) {
         val befolyoOsszeg = findViewById<EditText>(R.id.befolyoOsszeg).text.toString()
 
         val saveableString =
-            fixKoltsegSorKezelo.fixKoltsegek.joinToString(separator = System.lineSeparator()) { it.leiras.text.toString() + ";" + it.koltseg.text.toString() }
+            descriptionAndCostRow.fixCosts.joinToString(separator = System.lineSeparator()) { it.description.text.toString() + CALCULATION_DATA_INLINE_SEPARATOR + it.cost.text.toString() }
 
-        val mentettFile = File(applicationContext.filesDir.path + "/" + fajlNev + ".txt")
+        val mentettFile =
+            File(applicationContext.filesDir.path + "/" + fajlNev + CALCULATION_DATA_FILE_EXTENSION)
         mentettFile.writeText(befolyoOsszeg + System.lineSeparator() + saveableString)
-        googleDrivebaSzinkronizalo.uploadOrUpdateFile(mentettFile)
+        googleDriveSyncHandler.uploadOrUpdateFile(mentettFile)
     }
 
-    private fun createUjSortHozzaadGombKezelo() {
-        val hozzaadGomb = findViewById<FloatingActionButton>(R.id.floatingActionButton)
-        hozzaadGomb.setOnClickListener {
-            fixKoltsegSorKezelo.ujSor()
-        }
-    }
 
-    private fun createOsszegGombKezelo() {
-        val osszegGomb = findViewById<Button>(R.id.osszegez)
-        osszegGomb.setOnClickListener {
-            val fixKoltsegOsszeg = calculate(fixKoltsegSorKezelo.fixKoltsegek)
-            val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
-            var befolyoOsszegSzamkent = befolyoOsszeg.text.toString().toIntOrNull()
-            befolyoOsszegSzamkent = if (befolyoOsszegSzamkent == null) 0 else befolyoOsszegSzamkent
-
-            val maradtText = findViewById<TextView>(R.id.megmaradtOsszg)
-            val megtakaritas = befolyoOsszegSzamkent - fixKoltsegOsszeg
-            maradtText.text = megtakaritas.toString()
-        }
-    }
-
-    private fun calculate(fixKoltsegek: MutableList<FixKoltseg>): Int = fixKoltsegek.toList()
-        .filter { it.koltseg.text.toString().toIntOrNull() != null }
-        .sumBy { it.koltseg.text.toString().toInt() }
-
-    private fun createFajlNevBekero(view: View) {
-        val builder = AlertDialog.Builder(this)
-        val inflater = layoutInflater
-        builder.setTitle(getString(R.string.milyen_neven_mentsem))
-        val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_edittext, null)
-        val editText = dialogLayout.findViewById<EditText>(R.id.mentendoFajlNeve)
-        builder.setView(dialogLayout)
-        builder.setPositiveButton(android.R.string.ok) { _, _ ->
-            mentFajlba(editText.text.toString())
-            betoltveMegjelenitotBeallit(editText.text.toString())
-            Toast.makeText(
-                applicationContext,
-                getString(R.string.sikeresen_mentve, editText.text),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        builder.show()
-    }
-
-    fun createMentettKalkulacioLista(items: Array<String>) {
-        val builder = AlertDialog.Builder(this)
-        with(builder)
-        {
-            setTitle(R.string.mentett_kalkulaciok)
-            setItems(items) { _, which ->
-                googleDrivebaSzinkronizalo.readFileFromGoogleDrive(items[which] + ".txt")
-            }
-
-            setPositiveButton(android.R.string.cancel) { _, _ -> Unit }
-            show()
-        }
-    }
+    private fun calculate(fixKoltsegek: MutableList<FixCost>): Int = fixKoltsegek.toList()
+        .filter { it.cost.text.toString().toIntOrNull() != null }
+        .sumBy { it.cost.text.toString().toInt() }
 
     val filesFromGoogleDrive = { _: DialogInterface, _: Int ->
-        googleDrivebaSzinkronizalo.fajlListatLeker()
+        googleDriveSyncHandler.queryFileList()
     }
 
-    val createUjKalkulacio = { _: DialogInterface, _: Int ->
-        fixKoltsegSorKezelo.torolMindenSort()
-        fixKoltsegSorKezelo.ujSor()
-        betoltveMegjelenitotBeallit(getString(R.string.uj_mentetlen))
-
-        Unit
+    val createNewEmptyCalculation = { _: DialogInterface, _: Int ->
+        descriptionAndCostRow.deleteAllRows()
+        descriptionAndCostRow.newCostRow()
+        setLoadedCalculationDisplay(getString(R.string.uj_mentetlen))
     }
 
-    private fun betoltesKerdes(view: View, okFunction: (dialog: DialogInterface, which: Int) -> Unit) {
+    val saveCalculationAsAFile = { dialogInterface: DialogInterface, _: Int ->
+        val mentendoFajlNeve = (dialogInterface as AlertDialog).mentendoFajlNeve
 
-        val builder = AlertDialog.Builder(this)
-
-        with(builder)
-        {
-            setTitle(android.R.string.dialog_alert_title)
-            setMessage(R.string.loose_current)
-            setPositiveButton(
-                android.R.string.ok,
-                DialogInterface.OnClickListener(function = okFunction)
-            )
-            setNegativeButton(android.R.string.no) { _, _ -> Unit }
-            show()
-        }
+        mentFajlba(mentendoFajlNeve.text.toString())
+        setLoadedCalculationDisplay(mentendoFajlNeve.text.toString())
+        Toast.makeText(
+            applicationContext,
+            getString(R.string.sikeresen_mentve, mentendoFajlNeve.text),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        googleDrivebaSzinkronizalo.authActivityResultHandler(requestCode, resultCode, data)
+        googleDriveSyncHandler.authActivityResultHandler(requestCode, resultCode, data)
     }
 }

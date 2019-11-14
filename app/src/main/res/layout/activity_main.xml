@@ -91,6 +91,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:text="@string/szamol"
+            android:onClick="createCalculation"
             app:layout_constraintBottom_toBottomOf="@+id/befolyoOsszeg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -110,6 +111,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginBottom="8dp"
+            android:onClick="getCalculationName"
             android:text="@string/ment"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -122,6 +124,7 @@
             android:layout_marginLeft="4dp"
             android:layout_marginBottom="8dp"
             android:text="@string/betolt"
+            android:onClick="startCalculationLoadingProcess"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ment" />
 
@@ -133,6 +136,7 @@
             android:layout_marginLeft="4dp"
             android:layout_marginBottom="8dp"
             android:text="@string/uj"
+            android:onClick="requestNewEmptyCalculation"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/betolt" />
 
@@ -146,6 +150,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
+        android:onClick="addNewCostRow"
         app:backgroundTint="#009688"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

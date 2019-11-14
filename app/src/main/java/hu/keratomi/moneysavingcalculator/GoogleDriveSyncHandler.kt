@@ -1,6 +1,8 @@
 package hu.keratomi.moneysavingcalculator
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.startActivityForResult
@@ -18,7 +20,7 @@ import com.google.api.services.drive.DriveScopes
 import java.io.File
 import java.util.*
 
-class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
+class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
 
     val RQ_GOOGLE_SIGN_IN = 210
     private var mGoogleApiClient: GoogleSignInClient? = null
@@ -30,7 +32,7 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
         if (requestCode == RQ_GOOGLE_SIGN_IN && resultCode == Activity.RESULT_OK) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             task.addOnFailureListener {
-                println(it)
+                println(it) // TODO
             }
             task.addOnSuccessListener {
                 val credential = GoogleAccountCredential.usingOAuth2(
@@ -45,12 +47,12 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
 
                 mDriveServiceHelper = DriveServiceHelper(googleDriveService)
 
-                fajlListatLeker(false)
+                queryFileList(false)
             }
         }
     }
 
-    fun fajlListatLeker(withCalculationChooser: Boolean = true) {
+    fun queryFileList(withCalculationChooser: Boolean = true) {
         if (mDriveServiceHelper == null) {
             googleDriveIsNotWorking()
             return
@@ -62,15 +64,15 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
             val wasSync = ifThereAreFilesLocallySyncToGoogleDriveAndDeleteLocally()
 
             if (wasSync) {
-                fajlListatLeker(withCalculationChooser)
+                queryFileList(withCalculationChooser)
             }
 
             if (withCalculationChooser) {
                 val items = filelistFromGoogleDrive
-                    .map { it.name.substringBeforeLast(".txt") }
+                    .map { it.name.substringBeforeLast(CALCULATION_DATA_FILE_EXTENSION) }
                     .toTypedArray()
 
-                mainActivity.createMentettKalkulacioLista(items)
+                createWindowWithSavedCalculationList(mainActivity, items, readSelectedItemFormGoogleDrive)
             }
 
         }
@@ -96,19 +98,6 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
         }
     }
 
-    fun readFileFromGoogleDrive(fileName: String) {
-        if (mDriveServiceHelper == null) {
-            googleDriveIsNotWorking()
-            return
-        }
-
-        val fileId = filelistFromGoogleDrive.find { it.name == fileName }?.id
-        val readTask = mDriveServiceHelper?.readFile(fileId)
-        readTask?.addOnCompleteListener {
-            mainActivity.kivalasztottKalkulaciotBetolt(it.result?.first!!, it.result?.second!!)
-        }
-    }
-
     fun googleAuth() {
         val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestServerAuthCode(mainActivity.getString(R.string.web_client_id))
@@ -126,9 +115,22 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
         )
     }
 
+    private fun readFileFromGoogleDrive(fileName: String) {
+        if (mDriveServiceHelper == null) {
+            googleDriveIsNotWorking()
+            return
+        }
+
+        val fileId = filelistFromGoogleDrive.find { it.name == fileName }?.id
+        val readTask = mDriveServiceHelper?.readFile(fileId)
+        readTask?.addOnCompleteListener {
+            mainActivity.kivalasztottKalkulaciotBetolt(it.result?.first!!, it.result?.second!!)
+        }
+    }
+
     private fun ifThereAreFilesLocallySyncToGoogleDriveAndDeleteLocally(): Boolean {
         val filesOnDevice = File(mainActivity.applicationContext.filesDir.path)
-            .listFiles { file -> file.name.endsWith(".txt") }
+            .listFiles { file -> file.name.endsWith(CALCULATION_DATA_FILE_EXTENSION) }
 
         if (filesOnDevice == null || filesOnDevice.isEmpty()) {
             return false
@@ -147,5 +149,9 @@ class GoogleDrivebaSzinkronizalo(val mainActivity: MainActivity) {
             R.string.gd_is_not_available,
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    val readSelectedItemFormGoogleDrive = { dialogInterface: DialogInterface, which: Int ->
+        readFileFromGoogleDrive((dialogInterface as AlertDialog).listView.adapter.getItem(which).toString() + CALCULATION_DATA_FILE_EXTENSION)
     }
 }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="web_client_id">764258020892-son5lehjvcijurlh5ip9d0d245emf2jo.apps.googleusercontent.com</string>
-
     <string name="app_name">Pénzmegtakarítás kalkulátor</string>
     <string name="maradt">Maradt</string>
     <string name="fix_koltsegek">Fix költségek</string>
