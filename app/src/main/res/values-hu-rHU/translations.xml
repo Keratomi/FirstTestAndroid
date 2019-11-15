@@ -18,4 +18,5 @@
     <string name="gd_is_not_available">A Google Drive jelenleg nem elérhető</string>
     <string name="description">Leírás</string>
     <string name="cost">Költség</string>
+    <string name="delete">Töröl</string>
 </resources>
