@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         doCalculation()
     }
 
-    fun createCalculation(view: View) {
+    fun startCalculation(view: View) {
         doCalculation()
     }
 
@@ -80,11 +80,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun requestNewEmptyCalculation(menuItem: MenuItem) {
-        questionBeforeLoadCalculation(this, createNewEmptyCalculation)
+        questionBeforeDoActionWithLoadedCalculation(R.string.loose_current,this, createNewEmptyCalculation)
     }
 
     fun startCalculationLoadingProcess(menuItem: MenuItem) {
-        questionBeforeLoadCalculation(this, filesFromGoogleDrive)
+        questionBeforeDoActionWithLoadedCalculation(R.string.loose_current,this, filesFromGoogleDrive)
+    }
+
+    fun deleteLoadedCalculation(menuItem: MenuItem) {
+        questionBeforeDoActionWithLoadedCalculation(R.string.do_you_really_want_to_delete,this, deleteLoadedCalculation)
     }
 
     private fun resetFields() {
@@ -130,9 +134,15 @@ class MainActivity : AppCompatActivity() {
     val createNewEmptyCalculation = { _: DialogInterface, _: Int ->
         descriptionAndCostRow.deleteAllRows()
         descriptionAndCostRow.newCostRow()
+        googleDriveSyncHandler.clearLoadedFileId()
         resetFields()
         setLoadedCalculationDisplay(getString(R.string.new_unsaved))
         doCalculation()
+    }
+
+    val deleteLoadedCalculation = { dialogInterface: DialogInterface, index: Int ->
+        googleDriveSyncHandler.deleteLoadedCalculation()
+        createNewEmptyCalculation(dialogInterface, index)
     }
 
     val saveCalculationAsAFile = { dialogInterface: DialogInterface, _: Int ->

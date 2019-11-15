@@ -19,4 +19,6 @@
     <string name="description">Leírás</string>
     <string name="cost">Költség</string>
     <string name="delete">Töröl</string>
+    <string name="calculation_deleted">A kalkuláció sikeresen törölve lett</string>
+    <string name="do_you_really_want_to_delete">Biztosan töröljem a betöltött kalkulációt?</string>
 </resources>
