@@ -16,40 +16,40 @@
         tools:layout_editor_absoluteX="16dp">
 
         <TextView
-            android:id="@+id/megmaradtOsszg"
+            android:id="@+id/savableMoney"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="24dp"
             android:gravity="end"
             android:text="0"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/megmaradtSzoveg"
+            app:layout_constraintBottom_toBottomOf="@+id/savableMoneyLabel"
             app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
-            android:id="@+id/megmaradtSzoveg"
+            android:id="@+id/savableMoneyLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="40dp"
-            android:text="@string/maradt"
+            android:text="@string/saving"
             android:textSize="18sp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/osszegText" />
+            app:layout_constraintTop_toBottomOf="@+id/allInComingMoneyLabel" />
 
         <TextView
-            android:id="@+id/fixkoltseg"
+            android:id="@+id/fixCosts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/fix_koltsegek"
+            android:text="@string/fix_costs"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent" />
 
         <TextView
-            android:id="@+id/betoltveTextField"
+            android:id="@+id/loadedCalcuclationNameDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
@@ -61,17 +61,17 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
-            android:id="@+id/osszegText"
+            android:id="@+id/allInComingMoneyLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:text="@string/osszeg"
+            android:text="@string/sum_cost"
             android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/befolyoOsszeg"
+            app:layout_constraintBottom_toBottomOf="@+id/allInComingMoney"
             app:layout_constraintLeft_toLeftOf="parent" />
 
         <EditText
-            android:id="@+id/befolyoOsszeg"
+            android:id="@+id/allInComingMoney"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -80,19 +80,19 @@
             android:ems="5"
             android:gravity="right"
             android:inputType="number"
-            app:layout_constraintEnd_toStartOf="@+id/osszegez"
+            app:layout_constraintEnd_toStartOf="@+id/doCalc"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/osszegez"
+            android:id="@+id/doCalc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:text="@string/szamol"
+            android:text="@string/do_calc"
             android:onClick="createCalculation"
-            app:layout_constraintBottom_toBottomOf="@+id/befolyoOsszeg"
+            app:layout_constraintBottom_toBottomOf="@+id/allInComingMoney"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -105,40 +105,40 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
-            android:id="@+id/ment"
+            android:id="@+id/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginBottom="8dp"
             android:onClick="getCalculationName"
-            android:text="@string/ment"
+            android:text="@string/save"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/betolt"
+            android:id="@+id/load"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/betolt"
+            android:text="@string/load"
             android:onClick="startCalculationLoadingProcess"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ment" />
+            app:layout_constraintStart_toEndOf="@+id/save" />
 
         <Button
-            android:id="@+id/ujUres"
+            android:id="@+id/newEmpty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/uj"
+            android:text="@string/new_empty"
             android:onClick="requestNewEmptyCalculation"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/betolt" />
+            app:layout_constraintStart_toEndOf="@+id/load" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

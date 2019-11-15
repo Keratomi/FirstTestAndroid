@@ -124,7 +124,7 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         val fileId = filelistFromGoogleDrive.find { it.name == fileName }?.id
         val readTask = mDriveServiceHelper?.readFile(fileId)
         readTask?.addOnCompleteListener {
-            mainActivity.kivalasztottKalkulaciotBetolt(it.result?.first!!, it.result?.second!!)
+            mainActivity.loadSelectedCalculation(it.result?.first!!, it.result?.second!!)
         }
     }
 

@@ -26,7 +26,7 @@ fun createWindowWithSavedCalculationList(context: Context, items: Array<String>,
     val builder = AlertDialog.Builder(context)
     with(builder)
     {
-        setTitle(R.string.mentett_kalkulaciok)
+        setTitle(R.string.saved_calculations)
         setItems(items, DialogInterface.OnClickListener(function = okFunction))
 
         setPositiveButton(android.R.string.cancel) { _, _ -> Unit }
@@ -38,7 +38,7 @@ fun createWindowForGetCalculationName(context: Context, inflater: LayoutInflater
     val builder = AlertDialog.Builder(context)
     with(builder)
     {
-        setTitle(R.string.milyen_neven_mentsem)
+        setTitle(R.string.calculation_name)
         val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_edittext, null)
         setView(dialogLayout)
         setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener(function = okFunction))

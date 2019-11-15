@@ -28,22 +28,22 @@ class MainActivity : AppCompatActivity() {
         descriptionAndCostRow = DescriptionAndCostRow(resources, this, mainLayout)
         descriptionAndCostRow.newCostRow()
 
-        setLoadedCalculationDisplay(getString(R.string.uj_mentetlen))
+        setLoadedCalculationDisplay(getString(R.string.new_unsaved))
     }
 
     fun addNewCostRow(view: View) {
         descriptionAndCostRow.newCostRow()
     }
 
-    fun kivalasztottKalkulaciotBetolt(calculationName: String, fileContent: List<String>) {
+    fun loadSelectedCalculation(calculationName: String, fileContent: List<String>) {
         descriptionAndCostRow.deleteAllRows()
 
-        val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
-        befolyoOsszeg.text = fileContent[0]
+        val allInComingMoney = findViewById<TextView>(R.id.allInComingMoney)
+        allInComingMoney.text = fileContent[0]
 
         fileContent.subList(1, fileContent.size).forEach {
-            val (leiras, koltseg) = it.split(CALCULATION_DATA_INLINE_SEPARATOR)
-            descriptionAndCostRow.newCostRow(leiras, koltseg)
+            val (description, cost) = it.split(CALCULATION_DATA_INLINE_SEPARATOR)
+            descriptionAndCostRow.newCostRow(description, cost)
             setLoadedCalculationDisplay(
                 calculationName.substringBeforeLast(
                     CALCULATION_DATA_FILE_EXTENSION
@@ -53,14 +53,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun createCalculation(view: View) {
-        val fixKoltsegOsszeg = calculate(descriptionAndCostRow.fixCosts)
-        val befolyoOsszeg = findViewById<TextView>(R.id.befolyoOsszeg)
-        var befolyoOsszegSzamkent = befolyoOsszeg.text.toString().toIntOrNull()
-        befolyoOsszegSzamkent = if (befolyoOsszegSzamkent == null) 0 else befolyoOsszegSzamkent
+        val fixCostsSum = descriptionAndCostRow.fixCosts.toList()
+            .filter { it.cost.text.toString().toIntOrNull() != null }
+            .sumBy { it.cost.text.toString().toInt() }
 
-        val maradtText = findViewById<TextView>(R.id.megmaradtOsszg)
-        val megtakaritas = befolyoOsszegSzamkent - fixKoltsegOsszeg
-        maradtText.text = megtakaritas.toString()
+        var allInComingMoneyAsNumber = findViewById<TextView>(R.id.allInComingMoney).text.toString().toIntOrNull()
+        allInComingMoneyAsNumber = if (allInComingMoneyAsNumber == null) 0 else allInComingMoneyAsNumber
+
+        val releaseForSaving = allInComingMoneyAsNumber - fixCostsSum
+        val savableMoneyField = findViewById<TextView>(R.id.savableMoney)
+        savableMoneyField.text = releaseForSaving.toString()
     }
 
     fun getCalculationName(view: View) {
@@ -75,27 +77,22 @@ class MainActivity : AppCompatActivity() {
         questionBeforeLoadCalculation(this, filesFromGoogleDrive)
     }
 
-    private fun setLoadedCalculationDisplay(betoltott: String) {
-        val betoltveTextField = findViewById<TextView>(R.id.betoltveTextField)
-        betoltveTextField.text = getString(R.string.betoltve, betoltott)
+    private fun setLoadedCalculationDisplay(loadedCalcuclationName: String) {
+        val loadedCalcuclationNameDisplay = findViewById<TextView>(R.id.loadedCalcuclationNameDisplay)
+        loadedCalcuclationNameDisplay.text = getString(R.string.loaded, loadedCalcuclationName)
     }
 
-    private fun mentFajlba(fajlNev: String) {
-        val befolyoOsszeg = findViewById<EditText>(R.id.befolyoOsszeg).text.toString()
+    private fun saveToLocalDriveThenUploadToGoogleDrive(fileName: String) {
+        val allIncomingMoney = findViewById<EditText>(R.id.allInComingMoney).text.toString()
 
         val saveableString =
             descriptionAndCostRow.fixCosts.joinToString(separator = System.lineSeparator()) { it.description.text.toString() + CALCULATION_DATA_INLINE_SEPARATOR + it.cost.text.toString() }
 
-        val mentettFile =
-            File(applicationContext.filesDir.path + "/" + fajlNev + CALCULATION_DATA_FILE_EXTENSION)
-        mentettFile.writeText(befolyoOsszeg + System.lineSeparator() + saveableString)
-        googleDriveSyncHandler.uploadOrUpdateFile(mentettFile)
+        val locallySavedFile =
+            File(applicationContext.filesDir.path + "/" + fileName + CALCULATION_DATA_FILE_EXTENSION)
+        locallySavedFile.writeText(allIncomingMoney + System.lineSeparator() + saveableString)
+        googleDriveSyncHandler.uploadOrUpdateFile(locallySavedFile)
     }
-
-
-    private fun calculate(fixKoltsegek: MutableList<FixCost>): Int = fixKoltsegek.toList()
-        .filter { it.cost.text.toString().toIntOrNull() != null }
-        .sumBy { it.cost.text.toString().toInt() }
 
     val filesFromGoogleDrive = { _: DialogInterface, _: Int ->
         googleDriveSyncHandler.queryFileList()
@@ -104,17 +101,17 @@ class MainActivity : AppCompatActivity() {
     val createNewEmptyCalculation = { _: DialogInterface, _: Int ->
         descriptionAndCostRow.deleteAllRows()
         descriptionAndCostRow.newCostRow()
-        setLoadedCalculationDisplay(getString(R.string.uj_mentetlen))
+        setLoadedCalculationDisplay(getString(R.string.new_unsaved))
     }
 
     val saveCalculationAsAFile = { dialogInterface: DialogInterface, _: Int ->
-        val mentendoFajlNeve = (dialogInterface as AlertDialog).mentendoFajlNeve
+        val calclulationName = (dialogInterface as AlertDialog).calculationName
 
-        mentFajlba(mentendoFajlNeve.text.toString())
-        setLoadedCalculationDisplay(mentendoFajlNeve.text.toString())
+        saveToLocalDriveThenUploadToGoogleDrive(calclulationName.text.toString())
+        setLoadedCalculationDisplay(calclulationName.text.toString())
         Toast.makeText(
             applicationContext,
-            getString(R.string.sikeresen_mentve, mentendoFajlNeve.text),
+            getString(R.string.saved_successfully, calclulationName.text),
             Toast.LENGTH_LONG
         ).show()
     }
