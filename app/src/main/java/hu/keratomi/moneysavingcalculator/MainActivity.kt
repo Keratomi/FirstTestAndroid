@@ -9,6 +9,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import hu.keratomi.moneysavingcalculator.logic.DescriptionAndCostRow
+import hu.keratomi.moneysavingcalculator.logic.GoogleDriveSyncHandler
+import hu.keratomi.moneysavingcalculator.logic.createCalculationFromJson
+import hu.keratomi.moneysavingcalculator.logic.createJsonString
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.alert_dialog_with_edittext.*
 import java.io.File
@@ -22,10 +26,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        googleDriveSyncHandler = GoogleDriveSyncHandler(this)
+        googleDriveSyncHandler =
+            GoogleDriveSyncHandler(this)
         googleDriveSyncHandler.googleAuth()
 
-        descriptionAndCostRow = DescriptionAndCostRow(resources, this, mainLayout)
+        descriptionAndCostRow = DescriptionAndCostRow(
+            resources,
+            this,
+            mainLayout
+        )
         descriptionAndCostRow.newCostRow()
 
         setLoadedCalculationDisplay(getString(R.string.new_unsaved))
@@ -35,15 +44,16 @@ class MainActivity : AppCompatActivity() {
         descriptionAndCostRow.newCostRow()
     }
 
-    fun loadSelectedCalculation(calculationName: String, fileContent: List<String>) {
+    fun loadSelectedCalculation(calculationName: String, fileContent: String) {
         descriptionAndCostRow.deleteAllRows()
 
-        val allInComingMoney = findViewById<TextView>(R.id.allInComingMoney)
-        allInComingMoney.text = fileContent[0]
+        val calculationFromJson = createCalculationFromJson(fileContent)
 
-        fileContent.subList(1, fileContent.size).forEach {
-            val (description, cost) = it.split(CALCULATION_DATA_INLINE_SEPARATOR)
-            descriptionAndCostRow.newCostRow(description, cost)
+        val allInComingMoney = findViewById<TextView>(R.id.allInComingMoney)
+        allInComingMoney.text = calculationFromJson.allInComingMoney.toString()//String.format("%s", calculationFromJson.allInComingMoney)
+
+        calculationFromJson.fixCosts.forEach {
+            descriptionAndCostRow.newCostRow(it.description, String.format("%s", it.cost))
             setLoadedCalculationDisplay(
                 calculationName.substringBeforeLast(
                     CALCULATION_DATA_FILE_EXTENSION
@@ -85,12 +95,13 @@ class MainActivity : AppCompatActivity() {
     private fun saveToLocalDriveThenUploadToGoogleDrive(fileName: String) {
         val allIncomingMoney = findViewById<EditText>(R.id.allInComingMoney).text.toString()
 
-        val saveableString =
-            descriptionAndCostRow.fixCosts.joinToString(separator = System.lineSeparator()) { it.description.text.toString() + CALCULATION_DATA_INLINE_SEPARATOR + it.cost.text.toString() }
+
+
+        val saveableString = createJsonString(allIncomingMoney, descriptionAndCostRow.fixCosts)
 
         val locallySavedFile =
             File(applicationContext.filesDir.path + "/" + fileName + CALCULATION_DATA_FILE_EXTENSION)
-        locallySavedFile.writeText(allIncomingMoney + System.lineSeparator() + saveableString)
+        locallySavedFile.writeText(saveableString)
         googleDriveSyncHandler.uploadOrUpdateFile(locallySavedFile)
     }
 

@@ -1,4 +1,4 @@
-package hu.keratomi.moneysavingcalculator;
+package hu.keratomi.moneysavingcalculator.util;
 
 import androidx.core.util.Pair;
 
@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import static java.lang.String.join;
 
 /**
  * A utility for performing read/write operations on Drive files via the REST API and opening a
@@ -69,7 +71,7 @@ public class DriveServiceHelper {
      * Opens the file identified by {@code fileId} and returns a {@link Pair} of its name and
      * contents.
      */
-    public Task<Pair<String, List<String>>> readFile(String fileId) {
+    public Task<Pair<String, String>> readFile(String fileId) {
         return Tasks.call(mExecutor, () -> {
             // Retrieve the metadata as a File object.
             File metadata = mDriveService.files().get(fileId).execute();
@@ -85,7 +87,7 @@ public class DriveServiceHelper {
                     lines.add(line);
                 }
 
-                return Pair.create(name, lines);
+                return Pair.create(name, join(System.lineSeparator(), lines));
             }
         });
     }
