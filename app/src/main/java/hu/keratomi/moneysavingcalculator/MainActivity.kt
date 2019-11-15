@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         val calculationFromJson = createCalculationFromJson(fileContent)
 
         val allInComingMoney = findViewById<TextView>(R.id.allInComingMoney)
-        allInComingMoney.text = calculationFromJson.allInComingMoney.toString()//String.format("%s", calculationFromJson.allInComingMoney)
+        allInComingMoney.text = String.format("%s", calculationFromJson.allInComingMoney)
 
         calculationFromJson.fixCosts.forEach {
             descriptionAndCostRow.newCostRow(it.description, String.format("%s", it.cost))
@@ -60,19 +60,11 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
+        doCalculation()
     }
 
     fun createCalculation(view: View) {
-        val fixCostsSum = descriptionAndCostRow.fixCosts.toList()
-            .filter { it.cost.text.toString().toIntOrNull() != null }
-            .sumBy { it.cost.text.toString().toInt() }
-
-        var allInComingMoneyAsNumber = findViewById<TextView>(R.id.allInComingMoney).text.toString().toIntOrNull()
-        allInComingMoneyAsNumber = if (allInComingMoneyAsNumber == null) 0 else allInComingMoneyAsNumber
-
-        val releaseForSaving = allInComingMoneyAsNumber - fixCostsSum
-        val savableMoneyField = findViewById<TextView>(R.id.savableMoney)
-        savableMoneyField.text = releaseForSaving.toString()
+        doCalculation()
     }
 
     fun getCalculationName(view: View) {
@@ -87,6 +79,21 @@ class MainActivity : AppCompatActivity() {
         questionBeforeLoadCalculation(this, filesFromGoogleDrive)
     }
 
+    private fun doCalculation() {
+        val fixCostsSum = descriptionAndCostRow.fixCosts.toList()
+            .filter { it.cost.text.toString().toIntOrNull() != null }
+            .sumBy { it.cost.text.toString().toInt() }
+
+        var allInComingMoneyAsNumber =
+            findViewById<TextView>(R.id.allInComingMoney).text.toString().toIntOrNull()
+        allInComingMoneyAsNumber =
+            if (allInComingMoneyAsNumber == null) 0 else allInComingMoneyAsNumber
+
+        val releaseForSaving = allInComingMoneyAsNumber - fixCostsSum
+        val savableMoneyField = findViewById<TextView>(R.id.savableMoney)
+        savableMoneyField.text = releaseForSaving.toString()
+    }
+
     private fun setLoadedCalculationDisplay(loadedCalcuclationName: String) {
         val loadedCalcuclationNameDisplay = findViewById<TextView>(R.id.loadedCalcuclationNameDisplay)
         loadedCalcuclationNameDisplay.text = getString(R.string.loaded, loadedCalcuclationName)
@@ -94,8 +101,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveToLocalDriveThenUploadToGoogleDrive(fileName: String) {
         val allIncomingMoney = findViewById<EditText>(R.id.allInComingMoney).text.toString()
-
-
 
         val saveableString = createJsonString(allIncomingMoney, descriptionAndCostRow.fixCosts)
 
