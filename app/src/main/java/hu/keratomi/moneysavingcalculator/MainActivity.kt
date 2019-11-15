@@ -45,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadSelectedCalculation(calculationName: String, fileContent: String) {
+        resetFields()
+
         descriptionAndCostRow.deleteAllRows()
 
         val calculationFromJson = createCalculationFromJson(fileContent)
@@ -77,6 +79,11 @@ class MainActivity : AppCompatActivity() {
 
     fun startCalculationLoadingProcess(view: View) {
         questionBeforeLoadCalculation(this, filesFromGoogleDrive)
+    }
+
+    private fun resetFields() {
+        findViewById<TextView>(R.id.allInComingMoney).text = null
+        findViewById<TextView>(R.id.savableMoney).text = null
     }
 
     private fun doCalculation() {
@@ -117,7 +124,9 @@ class MainActivity : AppCompatActivity() {
     val createNewEmptyCalculation = { _: DialogInterface, _: Int ->
         descriptionAndCostRow.deleteAllRows()
         descriptionAndCostRow.newCostRow()
+        resetFields()
         setLoadedCalculationDisplay(getString(R.string.new_unsaved))
+        doCalculation()
     }
 
     val saveCalculationAsAFile = { dialogInterface: DialogInterface, _: Int ->
