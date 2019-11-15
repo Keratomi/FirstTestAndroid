@@ -19,4 +19,6 @@
     <string name="description">Description</string>
     <string name="cost">Cost</string>
     <string name="delete">Delete</string>
+    <string name="calculation_deleted">The calculation has been successfully deleted</string>
+    <string name="do_you_really_want_to_delete">Do you really want to delete the loaded calculation?</string>
 </resources>

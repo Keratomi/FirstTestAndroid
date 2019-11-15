@@ -6,5 +6,5 @@
     <item android:title="@string/new_empty" android:onClick="requestNewEmptyCalculation"/>
     <item android:title="@string/load" android:onClick="startCalculationLoadingProcess"/>
     <item android:title="@string/save" android:onClick="getCalculationName"/>
-<!--    <item android:title="@string/delete" android:onClick="startCalculationLoadingProcess"/>-->
+    <item android:title="@string/delete" android:onClick="deleteLoadedCalculation"/>
 </menu>

@@ -66,6 +66,10 @@ public class DriveServiceHelper {
         });
     }
 
+    public Task<Void> deleteFile(String id) {
+        return Tasks.call(mExecutor, () -> mDriveService.files().delete(id).execute());
+    }
+
 
     /**
      * Opens the file identified by {@code fileId} and returns a {@link Pair} of its name and

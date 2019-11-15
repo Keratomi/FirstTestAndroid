@@ -5,14 +5,14 @@ import android.content.Context
 import android.content.DialogInterface
 import android.view.LayoutInflater
 
-fun questionBeforeLoadCalculation(context: Context, okFunction: (dialog: DialogInterface, which: Int) -> Unit) {
+fun questionBeforeDoActionWithLoadedCalculation(messageId: Int, context: Context, okFunction: (dialog: DialogInterface, which: Int) -> Unit) {
 
     val builder = AlertDialog.Builder(context)
 
     with(builder)
     {
         setTitle(android.R.string.dialog_alert_title)
-        setMessage(R.string.loose_current)
+        setMessage(messageId)
         setPositiveButton(
             android.R.string.ok,
             DialogInterface.OnClickListener(function = okFunction)

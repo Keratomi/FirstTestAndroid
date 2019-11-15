@@ -32,6 +32,7 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
     private var mDriveServiceHelper: DriveServiceHelper? = null
 
     private lateinit var filelistFromGoogleDrive: List<com.google.api.services.drive.model.File>
+    private var loadedFileId: String? = null
 
     fun authActivityResultHandler(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RQ_GOOGLE_SIGN_IN && resultCode == Activity.RESULT_OK) {
@@ -93,20 +94,37 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
             googleDriveIsNotWorking()
             return
         }
-        val fileId = filelistFromGoogleDrive.find { it.name == file.name }?.id
+        loadedFileId = filelistFromGoogleDrive.find { it.name == file.name }?.id
 
         val task: Task<String>?
-        if (fileId == null) {
+        if (loadedFileId == null) {
             task = mDriveServiceHelper?.uploadFile(file.name, file)
         } else {
-            task = mDriveServiceHelper?.updateFile(fileId, file)
+            task = mDriveServiceHelper?.updateFile(loadedFileId, file)
         }
 
         task?.addOnCompleteListener {
+            loadedFileId = it.result
             Toast.makeText(mainActivity,
                 R.string.calculation_saved, Toast.LENGTH_LONG).show()
             file.delete()
         }
+    }
+
+    fun deleteLoadedCalculation() {
+        if (mDriveServiceHelper == null) {
+            googleDriveIsNotWorking()
+            return
+        }
+        val deleteTask = mDriveServiceHelper?.deleteFile(loadedFileId)
+        deleteTask?.addOnCompleteListener {
+            Toast.makeText(mainActivity,
+                R.string.calculation_deleted, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    fun clearLoadedFileId() {
+        loadedFileId = null
     }
 
     fun googleAuth() {
@@ -132,8 +150,8 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
             return
         }
 
-        val fileId = filelistFromGoogleDrive.find { it.name == fileName }?.id
-        val readTask = mDriveServiceHelper?.readFile(fileId)
+        loadedFileId = filelistFromGoogleDrive.find { it.name == fileName }?.id
+        val readTask = mDriveServiceHelper?.readFile(loadedFileId)
         readTask?.addOnCompleteListener {
             mainActivity.loadSelectedCalculation(it.result?.first!!, it.result?.second!!)
         }
