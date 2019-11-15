@@ -29,6 +29,9 @@ android {
     packagingOptions {
         pickFirst  'META-INF/*'
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
