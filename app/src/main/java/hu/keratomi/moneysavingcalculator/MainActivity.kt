@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
             this,
             mainLayout
         )
+        descriptionAndCostRow.createAddNewRow()
         descriptionAndCostRow.newCostRow()
 
         setLoadedCalculationDisplay(getString(R.string.new_unsaved))
@@ -47,10 +48,6 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu, menu)
 
         return super.onCreateOptionsMenu(menu)
-    }
-
-    fun addNewCostRow(view: View) {
-        descriptionAndCostRow.newCostRow()
     }
 
     fun loadSelectedCalculation(calculationName: String, fileContent: String) {
