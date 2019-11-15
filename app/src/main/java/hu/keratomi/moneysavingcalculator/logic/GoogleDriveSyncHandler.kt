@@ -1,4 +1,4 @@
-package hu.keratomi.moneysavingcalculator
+package hu.keratomi.moneysavingcalculator.logic
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -17,6 +17,11 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import hu.keratomi.moneysavingcalculator.CALCULATION_DATA_FILE_EXTENSION
+import hu.keratomi.moneysavingcalculator.MainActivity
+import hu.keratomi.moneysavingcalculator.R
+import hu.keratomi.moneysavingcalculator.createWindowWithSavedCalculationList
+import hu.keratomi.moneysavingcalculator.util.DriveServiceHelper
 import java.io.File
 import java.util.*
 
@@ -45,7 +50,8 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
                     credential
                 ).setApplicationName(mainActivity.getString(R.string.app_name)).build()
 
-                mDriveServiceHelper = DriveServiceHelper(googleDriveService)
+                mDriveServiceHelper =
+                    DriveServiceHelper(googleDriveService)
 
                 queryFileList(false)
             }
@@ -72,7 +78,11 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
                     .map { it.name.substringBeforeLast(CALCULATION_DATA_FILE_EXTENSION) }
                     .toTypedArray()
 
-                createWindowWithSavedCalculationList(mainActivity, items, readSelectedItemFormGoogleDrive)
+                createWindowWithSavedCalculationList(
+                    mainActivity,
+                    items,
+                    readSelectedItemFormGoogleDrive
+                )
             }
 
         }
@@ -93,7 +103,8 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         }
 
         task?.addOnCompleteListener {
-            Toast.makeText(mainActivity, R.string.calculation_saved, Toast.LENGTH_LONG).show()
+            Toast.makeText(mainActivity,
+                R.string.calculation_saved, Toast.LENGTH_LONG).show()
             file.delete()
         }
     }

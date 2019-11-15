@@ -1,4 +1,4 @@
-package hu.keratomi.moneysavingcalculator
+package hu.keratomi.moneysavingcalculator.logic
 
 import android.content.res.Resources
 import android.text.InputType
@@ -6,6 +6,9 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import hu.keratomi.moneysavingcalculator.MainActivity
+import hu.keratomi.moneysavingcalculator.R
+import hu.keratomi.moneysavingcalculator.data.FixCost
 
 
 class DescriptionAndCostRow(
@@ -47,7 +50,8 @@ class DescriptionAndCostRow(
         )
         rowContainer.addView(costField)
 
-        val newFixCost = FixCost(descriptionField, costField)
+        val newFixCost =
+            FixCost(descriptionField, costField)
 
         val deleteButton = createRowDeleteButton(rowContainer, newFixCost)
         rowContainer.addView(deleteButton)
@@ -112,5 +116,3 @@ class DescriptionAndCostRow(
         return newlyCreatedField
     }
 }
-
-data class FixCost(val description: EditText, val cost: EditText)
