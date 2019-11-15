@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
 
         googleDriveSyncHandler =
             GoogleDriveSyncHandler(this)
@@ -35,13 +38,16 @@ class MainActivity : AppCompatActivity() {
             this,
             mainLayout
         )
+        descriptionAndCostRow.createAddNewRow()
         descriptionAndCostRow.newCostRow()
 
         setLoadedCalculationDisplay(getString(R.string.new_unsaved))
     }
 
-    fun addNewCostRow(view: View) {
-        descriptionAndCostRow.newCostRow()
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     fun loadSelectedCalculation(calculationName: String, fileContent: String) {
@@ -69,15 +75,15 @@ class MainActivity : AppCompatActivity() {
         doCalculation()
     }
 
-    fun getCalculationName(view: View) {
+    fun getCalculationName(menuItem: MenuItem) {
         createWindowForGetCalculationName(this, layoutInflater, saveCalculationAsAFile)
     }
 
-    fun requestNewEmptyCalculation(view: View) {
+    fun requestNewEmptyCalculation(menuItem: MenuItem) {
         questionBeforeLoadCalculation(this, createNewEmptyCalculation)
     }
 
-    fun startCalculationLoadingProcess(view: View) {
+    fun startCalculationLoadingProcess(menuItem: MenuItem) {
         questionBeforeLoadCalculation(this, filesFromGoogleDrive)
     }
 

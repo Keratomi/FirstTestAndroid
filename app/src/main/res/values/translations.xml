@@ -18,4 +18,5 @@
     <string name="gd_is_not_available">Google Drive is not available now</string>
     <string name="description">Description</string>
     <string name="cost">Cost</string>
+    <string name="delete">Delete</string>
 </resources>

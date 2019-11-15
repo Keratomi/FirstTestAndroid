@@ -5,10 +5,12 @@ import android.text.InputType
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import androidx.constraintlayout.widget.ConstraintLayout
 import hu.keratomi.moneysavingcalculator.MainActivity
 import hu.keratomi.moneysavingcalculator.R
 import hu.keratomi.moneysavingcalculator.data.FixCost
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class DescriptionAndCostRow(
@@ -25,18 +27,7 @@ class DescriptionAndCostRow(
     }
 
     fun newCostRow() {
-        val rowContainer = LinearLayout(mainActivity)
-        rowContainer.tag = "contener_" + fixCosts.size
-        val layoutParams = ConstraintLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            resources.getDimensionPixelSize(R.dimen.kontener_height)
-        )
-        layoutParams.orientation = LinearLayout.HORIZONTAL
-        rowContainer.setLayoutParams(
-            layoutParams
-        )
-        rowContainer.x = 0F
-        mainLayout.addView(rowContainer)
+        val rowContainer = createNewRowContainer()
 
         val descriptionField = newEditText(
             InputType.TYPE_CLASS_TEXT,
@@ -60,6 +51,27 @@ class DescriptionAndCostRow(
         fixCosts.add(newFixCost)
     }
 
+    fun createAddNewRow() {
+        val rowContainer = createNewRowContainer(true)
+
+        val addNewRowButton = ImageButton(mainActivity)
+        addNewRowButton.setImageResource(android.R.drawable.ic_input_add)
+
+        val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+
+        addNewRowButton.layoutParams = layoutParams
+
+        addNewRowButton.setOnClickListener {
+            newCostRow()
+            mainActivity.scrollView2.post(Runnable { mainActivity.scrollView2.fullScroll(ScrollView.FOCUS_DOWN) })
+        }
+
+        rowContainer.addView(addNewRowButton)
+    }
+
     fun deleteOneCostRow(rowContainer: LinearLayout, fixCost: FixCost) {
         mainLayout.removeView(rowContainer)
         fixCosts.remove(fixCost)
@@ -71,6 +83,27 @@ class DescriptionAndCostRow(
         }
 
         fixCosts.clear()
+    }
+
+    private fun createNewRowContainer(forAddNewRowButton: Boolean = false): LinearLayout {
+        val rowContainer = LinearLayout(mainActivity)
+        rowContainer.tag = "contener_" + fixCosts.size
+        val layoutParams = ConstraintLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            resources.getDimensionPixelSize(R.dimen.kontener_height)
+        )
+        layoutParams.orientation = LinearLayout.HORIZONTAL
+        rowContainer.setLayoutParams(
+            layoutParams
+        )
+        rowContainer.x = 0F
+
+        if (forAddNewRowButton) {
+            mainLayout.addView(rowContainer)
+        } else {
+            mainLayout.addView(rowContainer, mainLayout.childCount - 1)
+        }
+        return rowContainer
     }
 
     private fun createRowDeleteButton(
