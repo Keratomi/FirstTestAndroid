@@ -38,7 +38,7 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         if (requestCode == RQ_GOOGLE_SIGN_IN && resultCode == Activity.RESULT_OK) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             task.addOnFailureListener {
-                println(it) // TODO
+                googleDriveIsNotWorking()
             }
             task.addOnSuccessListener {
                 val credential = GoogleAccountCredential.usingOAuth2(
@@ -85,7 +85,9 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
                     readSelectedItemFormGoogleDrive
                 )
             }
-
+        }
+        listTask?.addOnFailureListener {
+            googleDriveIsNotWorking()
         }
     }
 
@@ -109,6 +111,9 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
                 R.string.calculation_saved, Toast.LENGTH_LONG).show()
             file.delete()
         }
+        task?.addOnFailureListener {
+            googleDriveIsNotWorking()
+        }
     }
 
     fun deleteLoadedCalculation() {
@@ -120,6 +125,9 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         deleteTask?.addOnCompleteListener {
             Toast.makeText(mainActivity,
                 R.string.calculation_deleted, Toast.LENGTH_LONG).show()
+        }
+        deleteTask?.addOnFailureListener {
+            googleDriveIsNotWorking()
         }
     }
 
@@ -159,6 +167,9 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         val readTask = mDriveServiceHelper?.readFile(loadedFileId)
         readTask?.addOnCompleteListener {
             mainActivity.loadSelectedCalculation(it.result?.first!!, it.result?.second!!)
+        }
+        readTask?.addOnFailureListener {
+            googleDriveIsNotWorking()
         }
     }
 
