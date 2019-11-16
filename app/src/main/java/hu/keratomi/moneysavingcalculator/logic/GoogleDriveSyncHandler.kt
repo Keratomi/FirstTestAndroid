@@ -66,7 +66,7 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         }
         val listTask = mDriveServiceHelper?.queryFiles()
         listTask?.addOnCompleteListener {
-            filelistFromGoogleDrive = listTask.result!!.files // TODO: nullpointer
+            filelistFromGoogleDrive = it.result!!.files
 
             val wasSync = ifThereAreFilesLocallySyncToGoogleDriveAndDeleteLocally()
 
