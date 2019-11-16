@@ -1,5 +1,6 @@
 package hu.keratomi.moneysavingcalculator
 
+import hu.keratomi.moneysavingcalculator.logic.GoogleDriveSyncHandler
 import org.junit.Test
 
 import org.junit.Assert.*
