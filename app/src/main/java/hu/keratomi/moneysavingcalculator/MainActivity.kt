@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getCalculationName(menuItem: MenuItem) {
-        createWindowForGetCalculationName(this, layoutInflater, saveCalculationAsAFile)
+        createWindowForGetCalculationName(this, layoutInflater, googleDriveSyncHandler.getJustCalculationNamesFromLoadedFiles(), saveCalculationAsAFile)
     }
 
     fun requestNewEmptyCalculation(menuItem: MenuItem) {

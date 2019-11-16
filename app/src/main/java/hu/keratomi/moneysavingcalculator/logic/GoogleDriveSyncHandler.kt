@@ -144,6 +144,11 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         )
     }
 
+    fun getJustCalculationNamesFromLoadedFiles(): List<String> {
+        return filelistFromGoogleDrive.map { it.name.substringBeforeLast(
+            CALCULATION_DATA_FILE_EXTENSION) }
+    }
+
     private fun readFileFromGoogleDrive(fileName: String) {
         if (mDriveServiceHelper == null) {
             googleDriveIsNotWorking()

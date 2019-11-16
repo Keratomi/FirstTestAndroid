@@ -1,7 +1,9 @@
 package hu.keratomi.moneysavingcalculator.logic
 
+import android.content.Context
 import android.content.res.Resources
 import android.text.InputType
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -66,7 +68,12 @@ class DescriptionAndCostRow(
 
         addNewRowButton.setOnClickListener {
             newCostRow()
-            mainActivity.scrollView2.post(Runnable { mainActivity.scrollView2.fullScroll(ScrollView.FOCUS_DOWN) })
+            mainActivity.scrollView2.post(Runnable {
+                mainActivity.scrollView2.fullScroll(ScrollView.FOCUS_DOWN)
+                fixCosts.last().description.requestFocus()
+                val imm = mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(fixCosts.last().description, InputMethodManager.SHOW_IMPLICIT)
+            })
         }
 
         rowContainer.addView(addNewRowButton)
