@@ -32,6 +32,12 @@ android {
     lintOptions {
         abortOnError false
     }
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -53,6 +59,8 @@ dependencies {
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-all:1.10.19'
+    testImplementation 'org.robolectric:robolectric:4.3'
 }
