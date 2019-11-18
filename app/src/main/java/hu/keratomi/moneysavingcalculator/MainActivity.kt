@@ -1,15 +1,15 @@
 package hu.keratomi.moneysavingcalculator
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import hu.keratomi.moneysavingcalculator.logic.DescriptionAndCostRow
 import hu.keratomi.moneysavingcalculator.logic.GoogleDriveSyncHandler
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             this,
             mainLayout
         )
-        descriptionAndCostRow.createAddNewRow()
+        descriptionAndCostRow.createAddNewRowButton()
         descriptionAndCostRow.newCostRow()
 
         setLoadedCalculationDisplay(getString(R.string.new_unsaved))
@@ -75,20 +75,57 @@ class MainActivity : AppCompatActivity() {
         doCalculation()
     }
 
+    fun createNewCostRow(view: View) {
+        descriptionAndCostRow.newCostRow()
+        scrollView2.post(Runnable {
+            scrollView2.fullScroll(ScrollView.FOCUS_DOWN)
+            descriptionAndCostRow.fixCosts.last().description.requestFocus()
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(
+                descriptionAndCostRow.fixCosts.last().description,
+                InputMethodManager.SHOW_IMPLICIT
+            )
+        })
+        findViewById<TextView>(R.id.savableMoney).text = "0"
+    }
+
+    fun deleteCurrentCostRow(view: View) {
+        val rowContainer = view.parent as LinearLayout
+        descriptionAndCostRow.deleteOneCostRow(rowContainer)
+        findViewById<TextView>(R.id.savableMoney).text = "0"
+    }
+
     fun getCalculationName(menuItem: MenuItem) {
-        createWindowForGetCalculationName(this, layoutInflater, googleDriveSyncHandler.getJustCalculationNamesFromLoadedFiles(), saveCalculationAsAFile)
+        createWindowForGetCalculationName(
+            this,
+            layoutInflater,
+            googleDriveSyncHandler.getJustCalculationNamesFromLoadedFiles(),
+            saveCalculationAsAFile
+        )
     }
 
     fun requestNewEmptyCalculation(menuItem: MenuItem) {
-        questionBeforeDoActionWithLoadedCalculation(R.string.loose_current,this, createNewEmptyCalculation)
+        questionBeforeDoActionWithLoadedCalculation(
+            R.string.loose_current,
+            this,
+            createNewEmptyCalculation
+        )
     }
 
     fun startCalculationLoadingProcess(menuItem: MenuItem) {
-        questionBeforeDoActionWithLoadedCalculation(R.string.loose_current,this, filesFromGoogleDrive)
+        questionBeforeDoActionWithLoadedCalculation(
+            R.string.loose_current,
+            this,
+            filesFromGoogleDrive
+        )
     }
 
     fun deleteLoadedCalculation(menuItem: MenuItem) {
-        questionBeforeDoActionWithLoadedCalculation(R.string.do_you_really_want_to_delete,this, deleteLoadedCalculation)
+        questionBeforeDoActionWithLoadedCalculation(
+            R.string.do_you_really_want_to_delete,
+            this,
+            deleteLoadedCalculation
+        )
     }
 
     private fun resetFields() {
@@ -112,7 +149,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setLoadedCalculationDisplay(loadedCalcuclationName: String) {
-        val loadedCalcuclationNameDisplay = findViewById<TextView>(R.id.loadedCalcuclationNameDisplay)
+        val loadedCalcuclationNameDisplay =
+            findViewById<TextView>(R.id.loadedCalcuclationNameDisplay)
         loadedCalcuclationNameDisplay.text = getString(R.string.loaded, loadedCalcuclationName)
     }
 
