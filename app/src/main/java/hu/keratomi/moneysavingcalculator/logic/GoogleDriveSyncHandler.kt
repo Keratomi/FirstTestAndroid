@@ -67,6 +67,9 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
         val listTask = mDriveServiceHelper?.queryFiles()
         listTask?.addOnCompleteListener {
             filelistFromGoogleDrive = it.result!!.files
+            val (folder, files) = filelistFromGoogleDrive.partition { it.mimeType == "application/vnd.google-apps.folder" }
+            filelistFromGoogleDrive = files
+            createFolderForApplicationIfNotExists(folder[0].id)
 
             val wasSync = ifThereAreFilesLocallySyncToGoogleDriveAndDeleteLocally()
 
@@ -155,6 +158,20 @@ class GoogleDriveSyncHandler(val mainActivity: MainActivity) {
     fun getJustCalculationNamesFromLoadedFiles(): List<String> {
         return filelistFromGoogleDrive.map { it.name.substringBeforeLast(
             CALCULATION_DATA_FILE_EXTENSION) }
+    }
+
+    fun createFolderForApplicationIfNotExists(folderId: String) {
+        if (mDriveServiceHelper == null) {
+            googleDriveIsNotWorking()
+            return
+        }
+        val createFolderTask = mDriveServiceHelper?.createFolderForApplication(folderId)
+        createFolderTask?.addOnCompleteListener {
+
+        }
+        createFolderTask?.addOnFailureListener {
+            googleDriveIsNotWorking()
+        }
     }
 
     private fun readFileFromGoogleDrive(fileName: String) {

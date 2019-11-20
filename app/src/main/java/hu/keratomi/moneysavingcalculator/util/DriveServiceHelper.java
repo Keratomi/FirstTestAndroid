@@ -8,6 +8,7 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.common.base.Strings;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -27,18 +28,43 @@ import static java.lang.String.join;
  * file picker UI via Storage Access Framework.
  */
 public class DriveServiceHelper {
+    private static final String APPLICATION_FOLDER_NAME = "moneysavingcalculator";
+
     private final Executor mExecutor = Executors.newSingleThreadExecutor();
     private final Drive mDriveService;
+
+    private String applicationFolderId;
 
     public DriveServiceHelper(Drive driveService) {
         mDriveService = driveService;
     }
 
+    public Task<Void> createFolderForApplication(String folderId) {
+        return Tasks.call(mExecutor, () -> {
+            if (Strings.isNullOrEmpty(folderId)) {
+                File fileMetadata = new File();
+                fileMetadata.setName(APPLICATION_FOLDER_NAME);
+                fileMetadata.setMimeType("application/vnd.google-apps.folder");
+
+                File googleFile = mDriveService.files().create(fileMetadata)
+                        .setFields("id")
+                        .execute();
+                if (googleFile == null) {
+                    throw new IOException("Null result when requesting file creation.");
+                }
+                applicationFolderId = googleFile.getId();
+            } else {
+                applicationFolderId = folderId;
+            }
+
+            return null;
+        });
+    }
 
     public Task<String> uploadFile(String name, java.io.File fileTest) {
         return Tasks.call(mExecutor, () -> {
             File metadata = new File()
-                    .setParents(Collections.singletonList("root"))
+                    .setParents(Collections.singletonList(applicationFolderId))
                     .setMimeType("text/plain")
                     .setName(name);
 
